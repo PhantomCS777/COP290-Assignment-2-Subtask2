@@ -1,13 +1,15 @@
 import pygame,sys
 from settings import * 
-
-
+from debugger import debug
+from level import Level
 class Game:
     def __init__(self):
         
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH,HEIGTH))
+        pygame.display.set_caption(GAME_NAME)
         self.clock = pygame.time.Clock() 
+        self.level = Level()
         
     def run(self):
         while True: 
@@ -15,9 +17,11 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-        self.screen.fill('Black')   
-        pygame.display.update()
-        self.click.tick(FPS)     
+            self.screen.fill('Black')   
+            
+            self.level.run()
+            pygame.display.update()
+            self.clock.tick(FPS)     
 
 
 if __name__ == '__main__':  

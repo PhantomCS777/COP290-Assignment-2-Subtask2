@@ -1,8 +1,10 @@
 # game setup
+GAME_NAME = 'Game'
 WIDTH    = 1280	
 HEIGTH   = 720
-FPS      = 60
-TILESIZE = 64
+FPS      = 120
+TILE_SIZE = 64
+PLAYER_SPEED = 5
 
 WORLD_MAP = [
 ['x','x','x','x','x','x','x','x','x','x','x','x','x','x','x','x','x','x','x','x'],
