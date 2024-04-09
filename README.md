@@ -14,7 +14,7 @@ Then there is a platformer style combat (swordigo style) for stronger enemies an
 
 There are also gates/objects in open world that to be opened or used need a puzzle to be solved **to be decided**
 
-###combat
+### Combat
 - Gloves/gaunlet allow for melee attack
 - Gun/Specialized weapon for projectile
   
