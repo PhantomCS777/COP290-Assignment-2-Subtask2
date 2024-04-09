@@ -17,4 +17,14 @@ There are also gates/objects in open world that to be opened or used need a puzz
 ### Combat
 - Gloves/gaunlet allow for melee attack
 - Gun/Specialized weapon for projectile
+
+
+## Running the game 
+Start virtual environment and then run the `main.py` 
+
+```
+source venv/bin/activate
+cd src 
+python3 main.py
+```
   
