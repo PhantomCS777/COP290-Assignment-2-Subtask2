@@ -4,6 +4,9 @@ from tile import Tile
 from player import Player
 from weapon import Weapon
 from enemy import OpenWEnemy
+from projectile import Projectile
+from debugger import debug
+from enemydrop import Loot
 class Level:
     def __init__(self):
         # display surface 
@@ -12,9 +15,11 @@ class Level:
         self.visible_sprite = YOrderCameraGroup()
         self.obstacle_sprite = pygame.sprite.Group()
         
-        self.cur_attack = None 
+        self.cur_weapon = None 
         self.attack_sprites = pygame.sprite.Group()
         self.attackable_sprites = pygame.sprite.Group()
+        
+        self.loot_sprites = pygame.sprite.Group()
         
         # sprite setup 
         self.create_map()
@@ -31,16 +36,30 @@ class Level:
                 if column == 'p':
                     self.player = Player((x,y),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack)
                 if column == 'g':
-                    OpenWEnemy('garbage',(x,y),[self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.dmg_to_player)
+                    OpenWEnemy('garbage',(x,y),[self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.loot_sprites,self.visible_sprite,self.dmg_to_player)
                     
     def create_attack(self):
-        self.cur_attack = Weapon(self.player,[self.visible_sprite,self.attack_sprites])
+        self.cur_weapon = Weapon(self.player,[self.visible_sprite,self.attack_sprites])
+        if self.player.player_weapon_attr('weapon_type') == 'ranged':
+            
+            if self.player.stats['ammunition'] >= self.player.player_weapon_attr('atk_cost'):
+                self.player.stats['ammunition'] -= self.player.player_weapon_attr('atk_cost')
+                
+                Projectile(self.cur_weapon,[self.visible_sprite,self.attack_sprites],self.attackable_sprites,self.obstacle_sprite)
+        
         print('attack_done')       
 
+    def regen_ammo(self):
+        if self.player.stats['ammunition'] < self.player.max_stats['ammunition']:
+            self.player.stats['ammunition'] += 0.01
+            self.player.stats['ammunition'] = min(self.player.stats['ammunition'],self.player.max_stats['ammunition'])
+            self.player.stats['ammunition'] = max(self.player.stats['ammunition'],0)
+            
+            
     def destroy_attack(self):
-        if self.cur_attack:
-            self.cur_attack.kill()
-            self.cur_attack = None 
+        if self.cur_weapon:
+            self.cur_weapon.kill()
+            self.cur_weapon = None 
             print('attack_destroyed')
     
     def player_atk_logic(self):
@@ -49,15 +68,31 @@ class Level:
                 collied_sprites = pygame.sprite.spritecollide(attack,self.attackable_sprites,False)
                 if collied_sprites:
                     for target in collied_sprites:
-                        print('hit')
-                        target.take_dmg(self.player)
-                    
+                        if self.player.player_weapon_attr('weapon_type') == 'melee':
+                            print('hit')
+                            target.take_dmg(self.player)
+                        else:
+                            pass
+        if self.loot_sprites:
+            for loot in self.loot_sprites:
+                if loot.rect.colliderect(self.player.hitbox):
+                    self.after_loot(loot)
+                    loot.kill()
+                    print('loot_taken')
+                            
+    
+    def after_loot(self,loot):
+        self.player.stats['health'] += loot.health_regenerate 
+        self.player.stats['health'] = min(self.player.stats['health'],self.player.max_stats['health'])
+        self.player.stats['eddie'] += loot.eddie
+        
+        pass  
     def dmg_to_player(self,amount,atk_type):
         if self.player.vulnerable:
-            self.player.health -= amount
+            self.player.stats['health'] -= amount
             self.player.vulnerable = False 
             self.player.dmg_time = pygame.time.get_ticks()
-            print("player health is ",self.player.health)
+            print("player health is ",self.player.stats['health'])
                   
         
     def run(self):
@@ -67,7 +102,8 @@ class Level:
         self.visible_sprite.update()
         self.visible_sprite.enemy_update(self.player)
         self.player_atk_logic()
-        
+        self.regen_ammo()
+        debug(self.player.stats['ammunition'])
     
 
 class YOrderCameraGroup(pygame.sprite.Group):

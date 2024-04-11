@@ -8,19 +8,22 @@ PLAYER_SPEED = 5
 
 
 WEAPONS = {
-    'glove':{'cooldown':200,'dmg':20,'graphic':'../graphics/gloves.png'},
-    'gun': {'cooldown':400,'dmg':30,'graphic':'../graphics/gun.png'}
+    'glove':{'cooldown':200,'dmg':20,'graphic':'../graphics/gloves.png','weapon_type':'melee','atk_cost':1},
+    'gun': {'cooldown':100,'dmg':30,'graphic':'../graphics/gun.png','weapon_type':'ranged','atk_cost':5},   
     }   
 
 ENEMY_BASE = {
-    'garbage' : {'health':100,'level':'B','dmg':10,'atk_type':'garbage-atk','atk_sound':None,'atk_radius':80,'notice_radius':360,'speed':5,'pushback_res':1},
-    'dust_cloud':{'health':100,'level':'B','dmg':10,'atk_type':'dust-atk','atk_sound':None,'atk_radius':50,'notice_radius':400,'speed':8,'pushback_res':1},
+    'garbage' : {'health':100,'level':2,'dmg':10,'atk_type':'garbage-atk','atk_sound':None,'atk_radius':80,'notice_radius':360,'speed':2,'pushback_res':1,'drop_rate':0.6},
+    'dust_cloud':{'health':100,'level':2,'dmg':10,'atk_type':'dust-atk','atk_sound':None,'atk_radius':50,'notice_radius':400,'speed':8,'pushback_res':1,'drop_rate':0.65},
 }
 
 ENEMY_BOSS = {
-    'water_slime' : {'health':100,'level':'B','dmg':10,'atk_type':'slime-atk','atk-sound':None},
-    'boss' : {'health':100,'level':'B','dmg':10,'atk_type':'boss-atk','atk-sound':None},
+    'water_slime' : {'health':100,'level':-1,'dmg':10,'atk_type':'slime-atk','atk-sound':None,'drop_rate':0.9},
+    'boss' : {'health':100,'level':-2,'dmg':10,'atk_type':'boss-atk','atk-sound':None,'drop_rate':1.0},
 }
+
+
+
 
 WORLD_MAP = [
 ['x','x','x','x','x','x','x','x','x','x','x','x','x','x','x','x','x','x','x','x'],

@@ -2,10 +2,12 @@ import pygame
 from settings import * 
 from entity import Entity
 from debugger import debug
+from enemydrop import Loot
 import math
+import random 
 
 class OpenWEnemy(Entity):
-    def __init__(self,enemy_name,position,groups,obstacle_sprites,dmg_to_player):
+    def __init__(self,enemy_name,position,groups,obstacle_sprites,loot_sprites,visible_sprite,dmg_to_player):
         super().__init__(groups)
         self.sprite_type = 'enemy' 
         
@@ -16,7 +18,8 @@ class OpenWEnemy(Entity):
         self.dmg_to_player = dmg_to_player
         self.hitbox = self.rect.inflate(0,-10)
         self.obstacle_sprite = obstacle_sprites
-        
+        self.loot_sprites = loot_sprites
+        self.visible_sprite = visible_sprite
         # enemy stats 
  
         self.enemy_name=  enemy_name
@@ -31,7 +34,7 @@ class OpenWEnemy(Entity):
         self.notice_radius = enemy_data['notice_radius']
         self.speed = enemy_data['speed']
         self.pushback_res = enemy_data['pushback_res']
-        
+        self.drop_rate = enemy_data['drop_rate']
         # player interaction 
         self.can_attack = True
         self.atk_time = None 
@@ -130,8 +133,21 @@ class OpenWEnemy(Entity):
     def death(self):
        
         if self.health <= 0:
+            
             print('dead')
+            if self.drop_loot():
+                Loot(self,[self.visible_sprite,self.loot_sprites])
+            
             self.kill()
+    
+    def drop_loot(self):
+        chance = random.random()
+        print(self.drop_rate,chance)
+        if chance <= self.drop_rate:
+            return True
+        else:
+            return False
+        
     def poise(self):
         if not self.vulnerable:
             self.direction *= -self.pushback_res

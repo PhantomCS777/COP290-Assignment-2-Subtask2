@@ -13,7 +13,10 @@ class Player(Entity):
         # movement
         self.speed = PLAYER_SPEED 
         
-        self.health = 100
+        
+        self.max_stats  = {'health':100,'ammunition':100,'eddie':1000}
+        self.stats = {'health':100,'ammunition':100,'eddie':10000}
+        
         
         self.obstacle_sprite = obstacle_sprite
         self.hitbox = self.rect.inflate(0,-20)
@@ -64,7 +67,7 @@ class Player(Entity):
             
             self.create_attack()
             
-            print('melee')
+            print('attack initiated')
             
         # gun 
         if keys[pygame.K_e] and not self.attacking:
@@ -96,7 +99,6 @@ class Player(Entity):
     def player_weapon_attr(self,attr):
        return WEAPONS[self.weapon][attr]     
      
-       
     
             
         
