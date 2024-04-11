@@ -19,6 +19,11 @@ There are also gates/objects in open world that to be opened or used need a puzz
 - Gun/Specialized weapon for projectile
 
 
+## controls so far 
+- wasd/arrow keys for movement 
+- space bar/ left click to attack with either wepaon 
+- press 1 to switch to glove and press 2 to switch to gun
+
 ## Running the game 
 Start virtual environment and then run the `main.py` 
 
