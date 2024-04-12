@@ -23,6 +23,8 @@ There are also gates/objects in open world that to be opened or used need a puzz
 - wasd/arrow keys for movement 
 - space bar/ left click to attack with either wepaon 
 - press 1 to switch to glove and press 2 to switch to gun
+- press esc for pausing the game 
+- load game and new game 
 
 ## Running the game 
 Start virtual environment and then run the `main.py` 

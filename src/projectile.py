@@ -52,6 +52,7 @@ class Projectile(Entity):
             
             for sprite in self.attackable_sprites:
                 if sprite.hitbox.colliderect(self.hitbox):
+                    sprite.take_dmg(self.weapon.player)
                     self.kill()
             
             for sprite in self.obstacle_sprite:

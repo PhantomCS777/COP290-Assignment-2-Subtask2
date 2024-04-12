@@ -10,8 +10,9 @@ from enemydrop import Loot
 from menu import PauseMenu
 
 class Level:
-    def __init__(self):
+    def __init__(self,savefile):
         # display surface 
+        
         self.display_surface = pygame.display.get_surface()
         # sprite groups 
         self.visible_sprite = YOrderCameraGroup()
@@ -24,7 +25,7 @@ class Level:
         self.loot_sprites = pygame.sprite.Group()
         
         self.game_paused = False    
-       
+        self.savefile = savefile
         # sprite setup 
         self.create_map()
         
@@ -39,10 +40,11 @@ class Level:
                 if column == 'x':
                     Tile((x,y),[self.visible_sprite,self.obstacle_sprite])
                 if column == 'p':
-                    self.player = Player((x,y),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack)
+                    self.player = Player((x,y),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self.savefile)
                 if column == 'g':
                     OpenWEnemy('garbage',(x,y),[self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.loot_sprites,self.visible_sprite,self.dmg_to_player)
-                    
+    def get_player(self):
+        return self.player                 
     def create_attack(self):
         
         self.cur_weapon = Weapon(self.player,[self.visible_sprite,self.attack_sprites])
@@ -103,7 +105,7 @@ class Level:
     def run(self):
         # updates and draws the game
         
-        self.visible_sprite.draw(self.player)
+        
         
         if self.game_paused:
             self.pause_menu.display()
@@ -111,14 +113,14 @@ class Level:
             
             
         else:
-            
+            self.visible_sprite.draw(self.player)
             self.visible_sprite.update()
             self.visible_sprite.enemy_update(self.player)
             self.player_atk_logic()
             self.regen_ammo()
         
         
-        debug(self.player.stats['ammunition'])
+        # debug(self.player.stats['ammunition'])
     
 
 class YOrderCameraGroup(pygame.sprite.Group):

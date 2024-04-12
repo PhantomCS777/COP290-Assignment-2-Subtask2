@@ -45,6 +45,7 @@ class OpenWEnemy(Entity):
         self.vulnerable = True
         self.dmg_cooldown = 300
         
+        self.initial_delay = 50
         
         
     def import_graphics(self,name):

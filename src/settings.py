@@ -13,8 +13,8 @@ WEAPONS = {
     }   
 
 ENEMY_BASE = {
-    'garbage' : {'health':100,'level':2,'dmg':10,'atk_type':'garbage-atk','atk_sound':None,'atk_radius':80,'notice_radius':360,'speed':2,'pushback_res':1,'drop_rate':0.6},
-    'dust_cloud':{'health':100,'level':2,'dmg':10,'atk_type':'dust-atk','atk_sound':None,'atk_radius':50,'notice_radius':400,'speed':8,'pushback_res':1,'drop_rate':0.65},
+    'garbage' : {'health':100,'level':2,'dmg':10,'atk_type':'garbage-atk','atk_sound':None,'atk_radius':0,'notice_radius':360,'speed':2,'pushback_res':1,'drop_rate':0.6},
+    'dust_cloud':{'health':100,'level':2,'dmg':10,'atk_type':'dust-atk','atk_sound':None,'atk_radius':0,'notice_radius':400,'speed':8,'pushback_res':1,'drop_rate':0.65},
 }
 
 ENEMY_BOSS = {

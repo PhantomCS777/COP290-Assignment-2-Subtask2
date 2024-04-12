@@ -4,7 +4,7 @@ from entity import Entity
 
 
 class Player(Entity):
-    def __init__(self,position,groups,obstacle_sprite,create_attack,destroy_attack):
+    def __init__(self,position,groups,obstacle_sprite,create_attack,destroy_attack,savefile):
         super().__init__(groups)
         self.image = pygame.image.load('../graphics/player.png').convert_alpha()
         self.image = pygame.transform.scale(self.image,(TILE_SIZE,TILE_SIZE))
@@ -15,9 +15,12 @@ class Player(Entity):
         
         
         self.max_stats  = {'health':100,'ammunition':100,'eddie':1000}
-        self.stats = {'health':100,'ammunition':100,'eddie':10000}
+        self.stats = {'health':100,'ammunition':100,'eddie':1000}
+    
+        self.savefile = savefile 
         
-        
+        self.stats = self.savefile['player_stats']
+
         self.obstacle_sprite = obstacle_sprite
         self.hitbox = self.rect.inflate(0,-20)
         
@@ -38,6 +41,26 @@ class Player(Entity):
         
         self.weapon_index = 0 
         self.weapon = list(WEAPONS.keys())[self.weapon_index]
+   
+    def draw_health_bar(self):
+        
+        health_width = int((self.stats['health'] / self.max_stats['health']) * TILE_SIZE*4)
+        display_surface = pygame.display.get_surface()
+        health_bar_surface = pygame.Surface((TILE_SIZE*4, 5))
+        health_bar_surface.fill((255, 0, 0))  
+        
+        
+        remaining_health_surface = pygame.Surface((health_width, 20))
+        remaining_health_surface.fill((0, 255, 0))  # Fill the remaining health with green color
+        
+        
+        health_bar_surface.blit(remaining_health_surface, (0, 0))
+        
+        
+        health_bar_position = (10, 10)
+        
+        # Draw the health bar overlay on the main surface
+        display_surface.blit(health_bar_surface, health_bar_position)
    
     def open_world_input(self):
         keys = pygame.key.get_pressed() 
@@ -104,9 +127,11 @@ class Player(Entity):
             
         
     def update(self):
+          
         self.open_world_input()
         self.cooldown()
         self.move(self.speed)
+        self.draw_health_bar()
         
         
 
