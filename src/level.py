@@ -7,6 +7,8 @@ from enemy import OpenWEnemy
 from projectile import Projectile
 from debugger import debug
 from enemydrop import Loot
+from menu import PauseMenu
+
 class Level:
     def __init__(self):
         # display surface 
@@ -21,9 +23,12 @@ class Level:
         
         self.loot_sprites = pygame.sprite.Group()
         
+        self.game_paused = False    
+       
         # sprite setup 
         self.create_map()
-    
+        
+        self.pause_menu = PauseMenu(self.player)
     
     def create_map(self):
         for row_index,row in enumerate(WORLD_MAP):
@@ -39,13 +44,11 @@ class Level:
                     OpenWEnemy('garbage',(x,y),[self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.loot_sprites,self.visible_sprite,self.dmg_to_player)
                     
     def create_attack(self):
+        
         self.cur_weapon = Weapon(self.player,[self.visible_sprite,self.attack_sprites])
-        if self.player.player_weapon_attr('weapon_type') == 'ranged':
-            
-            if self.player.stats['ammunition'] >= self.player.player_weapon_attr('atk_cost'):
-                self.player.stats['ammunition'] -= self.player.player_weapon_attr('atk_cost')
-                
-                Projectile(self.cur_weapon,[self.visible_sprite,self.attack_sprites],self.attackable_sprites,self.obstacle_sprite)
+        
+        if self.player.player_weapon_attr('weapon_type') == 'ranged':  
+            Projectile(self.cur_weapon,[self.visible_sprite,self.attack_sprites],self.attackable_sprites,self.obstacle_sprite)
         
         print('attack_done')       
 
@@ -93,16 +96,28 @@ class Level:
             self.player.vulnerable = False 
             self.player.dmg_time = pygame.time.get_ticks()
             print("player health is ",self.player.stats['health'])
-                  
+    def toggle_pause(self):
+        self.game_paused = not self.game_paused
+        pass  
         
     def run(self):
         # updates and draws the game
         
         self.visible_sprite.draw(self.player)
-        self.visible_sprite.update()
-        self.visible_sprite.enemy_update(self.player)
-        self.player_atk_logic()
-        self.regen_ammo()
+        
+        if self.game_paused:
+            self.pause_menu.display()
+            
+            
+            
+        else:
+            
+            self.visible_sprite.update()
+            self.visible_sprite.enemy_update(self.player)
+            self.player_atk_logic()
+            self.regen_ammo()
+        
+        
         debug(self.player.stats['ammunition'])
     
 

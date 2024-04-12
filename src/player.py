@@ -62,10 +62,11 @@ class Player(Entity):
             
         # melee attack inp 
         if (keys[pygame.K_SPACE] or pygame.mouse.get_pressed()[0]) and not self.attacking:
-            self.attacking = True 
-            self.attack_time = pygame.time.get_ticks()
-            
-            self.create_attack()
+            if self.stats['ammunition'] >= self.player_weapon_attr('atk_cost'):
+                self.stats['ammunition'] -= self.player_weapon_attr('atk_cost')
+                self.attacking = True 
+                self.attack_time = pygame.time.get_ticks()
+                self.create_attack()
             
             print('attack initiated')
             
