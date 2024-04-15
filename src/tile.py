@@ -1,14 +1,14 @@
 import pygame 
 from settings import *
-import os
-from debugger import debug
-
 
 class Tile(pygame.sprite.Sprite):
-    def __init__(self,position,groups):
-        super().__init__(groups)
-        self.image = pygame.image.load('../graphics/tree.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image,(TILE_SIZE,TILE_SIZE))
-       
-        self.rect = self.image.get_rect(topleft = position)
-        self.hitbox = self.rect.inflate(0,-10)
+	def __init__(self,pos,groups,sprite_type,surface = pygame.Surface((TILE_SIZE,TILE_SIZE))):
+		super().__init__(groups)
+		self.sprite_type = sprite_type
+		y_offset = -10
+		self.image = surface
+		if sprite_type == 'object':
+			self.rect = self.image.get_rect(topleft = (pos[0],pos[1] - TILE_SIZE))
+		else:
+			self.rect = self.image.get_rect(topleft = pos)
+		self.hitbox = self.rect.inflate(0,y_offset)

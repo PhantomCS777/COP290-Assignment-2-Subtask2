@@ -5,13 +5,14 @@ from level import Level
 from landing_page import LandingPage
 from bossfight import BossFight
 from bigfight import BigFight
+from levels import *
 class Control:
     def __init__(self):
         
         self.savefile = self.load_save_file()
         self.landing_page = LandingPage(self)
         self.level1 = Level(self.savefile) # repalce with Level(save_data) 
-        self.level2 = Level(self.savefile)
+        self.level2 = Level1(self.savefile)
         self.game_state = 'landing_page'
         self.current_level = self.level1 
     
@@ -102,7 +103,8 @@ class Control:
             
         elif self.game_state == 'load':
             self.input()
-            self.level1.run()
+            # self.level1.run()
+            self.level2.run()
             # self.bigf.run()
             # self.bossf.run()
         

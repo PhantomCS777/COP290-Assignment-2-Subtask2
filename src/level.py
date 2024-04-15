@@ -8,7 +8,7 @@ from projectile import Projectile
 from debugger import debug
 from enemydrop import Loot
 from menu import PauseMenu
-
+from util import *
 class Level:
     def __init__(self,savefile):
         # display surface 
@@ -32,17 +32,58 @@ class Level:
         self.pause_menu = PauseMenu(self.player)
     
     def create_map(self):
-        for row_index,row in enumerate(WORLD_MAP):
-            print(row_index,row)
-            for column_index,column in enumerate(row):
-                x = column_index * TILE_SIZE
-                y = row_index * TILE_SIZE
-                if column == 'x':
-                    Tile((x,y),[self.visible_sprite,self.obstacle_sprite])
-                if column == 'p':
-                    self.player = Player((x,y),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self.savefile)
-                if column == 'g':
-                    OpenWEnemy('garbage',(x,y),[self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.loot_sprites,self.visible_sprite,self.dmg_to_player)
+        layouts = {
+			'boundary': import_csv_layout('../map/map_FloorBlocks.csv'),
+			'grass': import_csv_layout('../map/map_Grass.csv'),
+			'object': import_csv_layout('../map/map_Objects.csv'),
+			'entities': import_csv_layout('../map/map_Entities.csv')
+		}
+        # for row_index,row in enumerate(WORLD_MAP):
+        #     print(row_index,row)
+        #     for column_index,column in enumerate(row):
+        #         x = column_index * TILE_SIZE
+        #         y = row_index * TILE_SIZE
+        #         if column == 'x':
+        #             Tile((x,y),[self.visible_sprite,self.obstacle_sprite])
+        #         if column == 'p':
+        #             self.player = Player((x,y),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self.savefile)
+        #         if column == 'g':
+        #             OpenWEnemy('garbage',(x,y),[self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.loot_sprites,self.visible_sprite,self.dmg_to_player)
+        for style,layout in layouts.items():
+            for row_index,row in enumerate(layout):
+                for col_index, col in enumerate(row):
+                    if col != '-1':
+                        x = col_index * TILE_SIZE
+                        y = row_index * TILE_SIZE
+                        if style == 'boundary':
+                            Tile((x,y),[self.obstacle_sprite],'invisible')
+                        if style == 'grass':
+                            random_grass_image = pygame.image.load('../graphics/tree.png').convert_alpha() #random_grass_image = choice(graphics['grass'])
+                            random_grass_image = pygame.transform.scale(random_grass_image,(TILE_SIZE,TILE_SIZE))
+                            Tile(
+                                (x,y),
+                                [self.visible_sprite,self.obstacle_sprite],
+                                'grass',
+                                random_grass_image)
+
+                        if style == 'object':
+                            surf = pygame.image.load('../graphics/building.png').convert_alpha()  # surf = graphics['objects'][int(col)]
+                            surf = pygame.transform.scale(surf,(TILE_SIZE,TILE_SIZE))
+                            Tile((x,y),[self.visible_sprite,self.obstacle_sprite],'object',surf)
+
+                        if style == 'entities':
+                            if col == '394':
+                                self.player = Player(
+                                    (x,y),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self.savefile)
+                            else:
+                                if col == '390': monster_name = 'bamboo'
+                                elif col == '391': monster_name = 'spirit'
+                                elif col == '392': monster_name ='raccoon'
+                                else: monster_name = 'squid'
+                                OpenWEnemy(
+                                    'garbage',
+                                    (x,y),
+                                    [self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.loot_sprites,self.visible_sprite,self.dmg_to_player)
     def get_player(self):
         return self.player                 
     def create_attack(self):
@@ -130,11 +171,17 @@ class YOrderCameraGroup(pygame.sprite.Group):
         self.half_w = self.display_surface.get_width() // 2
         self.half_h = self.display_surface.get_height() // 2
         self.offset = pygame.math.Vector2(50,50)
+        self.floor_surf = pygame.image.load('../graphics/temp_bg.png').convert()
+        self.floor_rect = self.floor_surf.get_rect(topleft = (0,0))
     
     def draw(self,player):
         sprites = sorted(self.sprites(),key = lambda sprite: sprite.rect.centery)
         self.offset.x = self.half_w - player.rect.centerx
         self.offset.y = self.half_h - player.rect.centery
+        
+        floor_offset_pos = self.floor_rect.topleft + self.offset
+        self.display_surface.blit(self.floor_surf,floor_offset_pos)
+        
         for sprite in sprites: 
             self.display_surface.blit(sprite.image,sprite.rect.topleft + self.offset)
 
