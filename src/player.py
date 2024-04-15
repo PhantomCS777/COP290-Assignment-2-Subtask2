@@ -61,7 +61,19 @@ class Player(Entity):
         
         # Draw the health bar overlay on the main surface
         display_surface.blit(health_bar_surface, health_bar_position)
-   
+    def draw_ammo_bar(self):
+        ammo_width = int((self.stats['ammunition'] / self.max_stats['ammunition']) * TILE_SIZE*4)
+        display_surface = pygame.display.get_surface()
+        ammo_bar_surface = pygame.Surface((TILE_SIZE*4, 5))
+        ammo_bar_surface.fill((255, 0, 0))  
+        
+        
+        remaining_ammo_surface = pygame.Surface((ammo_width, 20))
+        remaining_ammo_surface.fill((0, 255, 0))
+        ammo_bar_surface.blit(remaining_ammo_surface, (0, 0))
+        ammo_bar_position = (10, 20)
+        display_surface.blit(ammo_bar_surface, ammo_bar_position)
+        
     def open_world_input(self):
         keys = pygame.key.get_pressed() 
         
@@ -132,6 +144,7 @@ class Player(Entity):
         self.cooldown()
         self.move(self.speed)
         self.draw_health_bar()
+        self.draw_ammo_bar()
         
         
 

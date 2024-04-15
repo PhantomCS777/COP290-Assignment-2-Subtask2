@@ -3,17 +3,21 @@ import os,json
 from settings import * 
 from level import Level 
 from landing_page import LandingPage
-
-
+from bossfight import BossFight
+from bigfight import BigFight
 class Control:
     def __init__(self):
         
         self.savefile = self.load_save_file()
         self.landing_page = LandingPage(self)
         self.level1 = Level(self.savefile) # repalce with Level(save_data) 
+        self.level2 = Level(self.savefile)
         self.game_state = 'landing_page'
         self.current_level = self.level1 
+    
         self.input_trigger = True 
+        self.bossf = BossFight()
+        self.bigf = BigFight()
     def update_game_state(self,mode):
         self.game_state = mode 
          
@@ -99,4 +103,6 @@ class Control:
         elif self.game_state == 'load':
             self.input()
             self.level1.run()
+            # self.bigf.run()
+            # self.bossf.run()
         
