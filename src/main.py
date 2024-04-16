@@ -18,8 +18,9 @@ class Game:
         while True: 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
                     self.control.update_save_file(self.control.current_level)
+                    pygame.quit()
+                    
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:

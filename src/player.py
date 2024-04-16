@@ -4,7 +4,7 @@ from entity import Entity
 
 
 class Player(Entity):
-    def __init__(self,position,groups,obstacle_sprite,create_attack,destroy_attack,savefile):
+    def __init__(self,position,groups,obstacle_sprite,create_attack,destroy_attack,level,savefile):
         super().__init__(groups)
         self.image = pygame.image.load('../graphics/player.png').convert_alpha()
         self.image = pygame.transform.scale(self.image,(TILE_SIZE,TILE_SIZE))
@@ -12,15 +12,15 @@ class Player(Entity):
         
         # movement
         self.speed = PLAYER_SPEED 
-        
+        self.level = level
         
         self.max_stats  = {'health':100,'ammunition':100,'eddie':1000}
-        self.stats = {'health':100,'ammunition':100,'eddie':1000}
+        # self.stats = {'health':100,'ammunition':100,'eddie':1000}
     
         self.savefile = savefile 
         
-        self.stats = self.savefile['player_stats']
-
+        # self.stats = self.savefile['player_stats']
+        self.update_stats(self.savefile)
         self.obstacle_sprite = obstacle_sprite
         self.hitbox = self.rect.inflate(0,-20)
         
@@ -41,10 +41,12 @@ class Player(Entity):
         
         self.weapon_index = 0 
         self.weapon = list(WEAPONS.keys())[self.weapon_index]
-   
+    def update_stats(self,savefile):
+        self.savefile = savefile
+        self.stats = self.savefile['player_stats']
     def draw_health_bar(self):
         
-        health_width = int((self.stats['health'] / self.max_stats['health']) * TILE_SIZE*4)
+        health_width = max(int((self.stats['health'] / self.max_stats['health']) * TILE_SIZE*4),0)
         display_surface = pygame.display.get_surface()
         health_bar_surface = pygame.Surface((TILE_SIZE*4, 5))
         health_bar_surface.fill((255, 0, 0))  
@@ -135,16 +137,40 @@ class Player(Entity):
     def player_weapon_attr(self,attr):
        return WEAPONS[self.weapon][attr]     
      
-    
-            
+   
+    def player_alive(self):
+        return self.stats['health'] > 0        
+    def death_scren(self):
+        display_surface = pygame.display.get_surface()
+        overlay_surface = pygame.Surface(display_surface.get_size(), pygame.SRCALPHA)
+        overlay_surface.fill((255, 0, 0, 128))  # Translucent red color
+        display_surface.blit(overlay_surface, (0, 0))
         
+        font = pygame.font.Font(None, 36)
+        text_surface = font.render("YOU DIED", True, (255, 255, 255))
+        text_surface2 = font.render("Saving the World is important, however so is your life", True, (255, 255, 255))
+        text_surface3 = font.render("Lets Press SPACE to restart !", True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(display_surface.get_width() // 2, display_surface.get_height() // 2))
+        text_rect2 = text_surface2.get_rect(center=(display_surface.get_width() // 2, display_surface.get_height() // 2 + 50))
+        text_rect3 = text_surface3.get_rect(center=(display_surface.get_width() // 2, display_surface.get_height() // 2 + 100))
+        display_surface.blit(text_surface, text_rect)
+        display_surface.blit(text_surface2, text_rect2)
+        display_surface.blit(text_surface3, text_rect3)
+       
+    
     def update(self):
-          
-        self.open_world_input()
-        self.cooldown()
-        self.move(self.speed)
-        self.draw_health_bar()
-        self.draw_ammo_bar()
+        if self.player_alive():
+            self.open_world_input()
+            self.cooldown()
+            self.move(self.speed)
+            self.draw_health_bar()
+            self.draw_ammo_bar()
+        else:
+            self.death_scren()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_SPACE]:
+                self.level.reset = True
+            pass
         
         
 

@@ -19,24 +19,9 @@ class LandingPage:
         
         pygame.draw.rect(self.display_surface, (0, 255, 0), self.load_game_button)
         self.display_surface.blit(self.load_game_text, (self.load_game_button.x + 50, self.load_game_button.y + 10))
-        print('hello wolrld')
+        
 
-    def handle_event(self):
-        while True:
-            
-            for event in pygame.event.get():
-                
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.new_game_button.collidepoint(event.pos):
-                        
-                        self.control.update_game_state('new')
-                        return 
-                        
-                    elif self.load_game_button.collidepoint(event.pos):
-                        
-                        self.control.update_game_state('load')
-                        print("Load game button clicked")
-                        return
+  
                
                         
              

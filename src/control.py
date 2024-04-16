@@ -6,23 +6,31 @@ from landing_page import LandingPage
 from bossfight import BossFight
 from bigfight import BigFight
 from levels import *
+import subprocess
 class Control:
     def __init__(self):
         
         self.savefile = self.load_save_file()
         self.landing_page = LandingPage(self)
-        self.level1 = Level(self.savefile) # repalce with Level(save_data) 
-        self.level2 = Level1(self.savefile)
+        self.level1 = Level1('level-1',self.savefile) # repalce with Level(save_data) 
+        self.level2 = Level2('level-2',self.savefile)
         self.game_state = 'landing_page'
-        self.current_level = self.level1 
-    
+        
+        self.current_level_name = self.savefile['level_data']['current_level']
+        self.current_level = self.get_current_level(self.current_level_name)
         self.input_trigger = True 
         self.bossf = BossFight()
         self.bigf = BigFight()
+    def get_current_level(self,level):
+        if level == 'level-1':
+            return self.level1
+        if level == 'level-2':
+            return self.level2
     def update_game_state(self,mode):
         self.game_state = mode 
          
     def new_save_file(self):
+        subprocess.run(["rm","../savefile/save.json"])
         save_data = {
             "player_stats": {
             "health": 100,
@@ -45,7 +53,9 @@ class Control:
             }
             },
             "level_data": {
-            
+                "current_level": "level-1",
+                "level-1": {},
+                "level-2": {}
             }
         }
 
@@ -53,7 +63,7 @@ class Control:
         with open(save_file_path, "w") as save_file:
             json.dump(save_data, save_file)
 
-        print("Save file updated successfully.")
+        print("Save file updated successfully. adasf")
 
     
     def input(self):
@@ -74,7 +84,7 @@ class Control:
             save_data["player_stats"]["health"] = player.stats["health"]
             save_data["player_stats"]["ammunition"] = player.stats["ammunition"]
             save_data["player_stats"]["eddie"] = player.stats["eddie"]
-
+            save_data["level_data"]["current_level"] = level.level_name
 
             
 
@@ -91,20 +101,44 @@ class Control:
         except:
             self.new_save_file()
             return self.load_save_file()
-        
+    
     def run(self):
         if self.game_state == 'landing_page':
             self.landing_page.run()
             
         elif self.game_state == 'new':
             self.new_save_file()
+            self.__init__()
+            # self.savefile = self.load_save_file()
+            # print(self.savefile)
+            # self.current_level.get_player().update_stats(self.savefile)
+            # print(self.current_level.get_player().stats)
             self.game_state = 'load'
             
             
         elif self.game_state == 'load':
             self.input()
+            
+            if self.current_level_name == 'level-1':
+                self.current_level = self.level1
+                self.level1.run()
+                self.current_level_name = self.level1.update_level()
+                
+                if self.level1.reset:
+                    self.level1.get_player().stats['health'] = 70
+                    self.level1.reset = False
+                    self.level1 = Level1('level-1',self.savefile)
+                    
             # self.level1.run()
-            self.level2.run()
+            if self.current_level_name == 'level-2':
+                self.current_level  = self.level2
+                self.level2.run()
+                self.current_level_name = self.level2.update_level()
+                
+                if self.level2.reset:
+                    self.level2.get_player().stats['health'] = 70
+                    self.level2.reset = False
+                    self.level2 = Level2('level-2',self.savefile)
             # self.bigf.run()
             # self.bossf.run()
         

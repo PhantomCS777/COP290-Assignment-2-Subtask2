@@ -74,7 +74,7 @@ class Level:
                         if style == 'entities':
                             if col == '394':
                                 self.player = Player(
-                                    (x,y),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self.savefile)
+                                    (x,y),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self,self.savefile)
                             else:
                                 if col == '390': monster_name = 'bamboo'
                                 elif col == '391': monster_name = 'spirit'
@@ -159,6 +159,7 @@ class Level:
             self.visible_sprite.enemy_update(self.player)
             self.player_atk_logic()
             self.regen_ammo()
+              
         
         
         # debug(self.player.stats['ammunition'])
