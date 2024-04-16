@@ -28,7 +28,7 @@ class LandingPage:
         
     def run(self):
         while True:
-            
+            self.draw()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -44,7 +44,7 @@ class LandingPage:
                         self.control.update_game_state('load')
                         print("Load game button clicked")
                         return
-                self.draw()
-                pygame.display.update()
+                
+            pygame.display.update()
             
         

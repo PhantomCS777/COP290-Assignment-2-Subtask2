@@ -13,6 +13,7 @@ class Game:
         self.clock = pygame.time.Clock() 
         # self.level = Level()
         self.control = Control()
+        self.landing_page = LandingPage(self.control)
         
     def run(self):
         while True: 
@@ -27,8 +28,10 @@ class Game:
                         # self.level.toggle_pause()
                         pass
             self.screen.fill('Black')   
-            
-            self.control.run()
+            if self.control.game_state == 'landing_page':
+                self.landing_page.run()
+            else:
+                self.control.run() 
             pygame.display.update()
             self.clock.tick(FPS)     
 

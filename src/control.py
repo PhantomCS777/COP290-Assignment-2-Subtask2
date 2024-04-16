@@ -3,24 +3,44 @@ import os,json
 from settings import * 
 from level import Level 
 from landing_page import LandingPage
-from bossfight import BossFight
+# from bossfight import BossFight
 from bigfight import BigFight
 from levels import *
 import subprocess
+from threading import Thread
 class Control:
     def __init__(self):
         
         self.savefile = self.load_save_file()
         self.landing_page = LandingPage(self)
-        self.level1 = Level1('level-1',self.savefile) # repalce with Level(save_data) 
-        self.level2 = Level2('level-2',self.savefile)
-        self.game_state = 'landing_page'
         
+        # self.level1 = Level1('level-1',self.savefile) # repalce with Level(save_data) 
+        # self.level2 = Level2('level-2',self.savefile)
+        
+        self.level1 = None
+        self.level2 = None
+        level_thread1 = Thread(target=self.initialize_level, args=('level-1',))
+        level_thread2 = Thread(target=self.initialize_level, args=('level-2',))
+        level_thread1.start()
+        level_thread2.start()
+        level_thread1.join()
+        level_thread2.join()
+        
+        self.game_state = 'landing_page'
+        self.transition = False
+        self.transition_counter = 0
         self.current_level_name = self.savefile['level_data']['current_level']
         self.current_level = self.get_current_level(self.current_level_name)
+        
         self.input_trigger = True 
-        self.bossf = BossFight()
-        self.bigf = BigFight()
+        # self.bossf = BossFight()
+        # self.bigf = BigFight()
+        
+    def initialize_level(self, level_name):
+        if level_name == 'level-1':
+            self.level1 = Level1(level_name, self.savefile)
+        elif level_name == 'level-2':
+            self.level2 = Level2(level_name, self.savefile)
     def get_current_level(self,level):
         if level == 'level-1':
             return self.level1
@@ -30,34 +50,11 @@ class Control:
         self.game_state = mode 
          
     def new_save_file(self):
-        subprocess.run(["rm","../savefile/save.json"])
-        save_data = {
-            "player_stats": {
-            "health": 100,
-            "ammunition": 100,
-            "eddie": 1000
-            },
-            "player_weapon_stats": {
-            "glove":{
-            "weapon_type": "melee",
-            "weapon_level": 1,
-            "weapon_damage": 20,
-            "weapon_name": "glove",
-            "cooldown": 200},
-            "gun":{
-            "weapon_type": "ranged",
-            "weapon_level": 1,
-            "weapon_damage": 40,
-            "weapon_name": "gun",
-            "cooldown": 100
-            }
-            },
-            "level_data": {
-                "current_level": "level-1",
-                "level-1": {},
-                "level-2": {}
-            }
-        }
+        # subprocess.run(["rm","../savefile/save.json"])
+        new_save_path = "../savefile/new_save.json"
+        with open(new_save_path, "r") as save_file:
+            save_data = json.load(save_file)
+
 
         save_file_path = "../savefile/save.json" 
         with open(save_file_path, "w") as save_file:
@@ -84,6 +81,11 @@ class Control:
             save_data["player_stats"]["health"] = player.stats["health"]
             save_data["player_stats"]["ammunition"] = player.stats["ammunition"]
             save_data["player_stats"]["eddie"] = player.stats["eddie"]
+            
+            save_data["player_max_stats"]["health"] = player.max_stats["health"]
+            save_data["player_max_stats"]["ammunition"] = player.max_stats["ammunition"]
+            save_data["player_max_stats"]["eddie"] = player.max_stats["eddie"]
+            
             save_data["level_data"]["current_level"] = level.level_name
 
             
@@ -101,10 +103,29 @@ class Control:
         except:
             self.new_save_file()
             return self.load_save_file()
-    
+    def transition_screen(self):
+        
+        surface = pygame.display.get_surface()
+        
+        transition_color = pygame.Color(0, 0, 0, min(255, self.transition_counter * 2))  # Fade to black
+
+       
+        surface.fill(transition_color)
+
+        # Increase the transition counter until it reaches 100
+        if self.transition_counter < 100:
+            self.transition_counter += 5
+        else:
+            self.transition_counter = 0
+            self.transition = False
+        
+         
+         
+        
     def run(self):
         if self.game_state == 'landing_page':
-            self.landing_page.run()
+            # self.landing_page.run()
+            pass
             
         elif self.game_state == 'new':
             self.new_save_file()
@@ -118,19 +139,26 @@ class Control:
             
         elif self.game_state == 'load':
             self.input()
-            
+            if self.transition:
+                self.transition_screen()
+                return
+                
             if self.current_level_name == 'level-1':
                 self.current_level = self.level1
                 self.level1.run()
                 self.current_level_name = self.level1.update_level()
-                
+                self.current_level.new_update()
+                if self.current_level_name != 'level-1':
+                    self.transition = True
+                    
                 if self.level1.reset:
                     self.level1.get_player().stats['health'] = 70
                     self.level1.reset = False
+                    self.transition =  True
                     self.level1 = Level1('level-1',self.savefile)
                     
             # self.level1.run()
-            if self.current_level_name == 'level-2':
+            elif self.current_level_name == 'level-2':
                 self.current_level  = self.level2
                 self.level2.run()
                 self.current_level_name = self.level2.update_level()

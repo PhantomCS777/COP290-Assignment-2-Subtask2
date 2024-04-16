@@ -22,3 +22,7 @@ def import_folder(path):
 			surface_list.append(image_surf)
 
 	return surface_list
+
+
+def weapon_image(name):
+    return pygame.image.load(f'../graphics/{name}.png').convert_alpha()

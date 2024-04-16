@@ -1,7 +1,7 @@
 import pygame 
 from settings import *
 from entity import Entity
-
+from util import *
 
 class Player(Entity):
     def __init__(self,position,groups,obstacle_sprite,create_attack,destroy_attack,level,savefile):
@@ -14,7 +14,7 @@ class Player(Entity):
         self.speed = PLAYER_SPEED 
         self.level = level
         
-        self.max_stats  = {'health':100,'ammunition':100,'eddie':1000}
+        # self.max_stats  = {'health':100,'ammunition':100,'eddie':1000}
         # self.stats = {'health':100,'ammunition':100,'eddie':1000}
     
         self.savefile = savefile 
@@ -41,14 +41,18 @@ class Player(Entity):
         
         self.weapon_index = 0 
         self.weapon = list(WEAPONS.keys())[self.weapon_index]
+        self.weapon_images = {}
+        for w in WEAPONS:
+            self.weapon_images[w] = pygame.transform.scale(weapon_image(w),(TILE_SIZE,TILE_SIZE))
     def update_stats(self,savefile):
         self.savefile = savefile
         self.stats = self.savefile['player_stats']
+        self.max_stats = self.savefile['player_max_stats']
     def draw_health_bar(self):
         
         health_width = max(int((self.stats['health'] / self.max_stats['health']) * TILE_SIZE*4),0)
         display_surface = pygame.display.get_surface()
-        health_bar_surface = pygame.Surface((TILE_SIZE*4, 5))
+        health_bar_surface = pygame.Surface((self.max_stats['health'], 5))
         health_bar_surface.fill((255, 0, 0))  
         
         
@@ -66,7 +70,7 @@ class Player(Entity):
     def draw_ammo_bar(self):
         ammo_width = int((self.stats['ammunition'] / self.max_stats['ammunition']) * TILE_SIZE*4)
         display_surface = pygame.display.get_surface()
-        ammo_bar_surface = pygame.Surface((TILE_SIZE*4, 5))
+        ammo_bar_surface = pygame.Surface((self.max_stats['ammunition'], 5))
         ammo_bar_surface.fill((255, 0, 0))  
         
         
@@ -75,6 +79,14 @@ class Player(Entity):
         ammo_bar_surface.blit(remaining_ammo_surface, (0, 0))
         ammo_bar_position = (10, 20)
         display_surface.blit(ammo_bar_surface, ammo_bar_position)
+        
+    def draw_cur_weapon(self):
+        display_surface = pygame.display.get_surface()
+        
+        weapon_img = self.weapon_images[self.weapon]
+        weapon_rect = weapon_img.get_rect(bottomleft=(10, display_surface.get_height() - 10))
+        pygame.draw.rect(display_surface, (255, 255, 255), weapon_rect, 2)
+        display_surface.blit(weapon_img, weapon_rect)
         
     def open_world_input(self):
         keys = pygame.key.get_pressed() 
@@ -135,7 +147,7 @@ class Player(Entity):
                  
         
     def player_weapon_attr(self,attr):
-       return WEAPONS[self.weapon][attr]     
+       return self.savefile['player_weapon_stats'][self.weapon][attr]     
      
    
     def player_alive(self):
@@ -165,6 +177,8 @@ class Player(Entity):
             self.move(self.speed)
             self.draw_health_bar()
             self.draw_ammo_bar()
+            self.draw_cur_weapon()
+            print(self.stats['health'])
         else:
             self.death_scren()
             keys = pygame.key.get_pressed()
