@@ -46,7 +46,7 @@ class Player(Entity):
         # self.stats = self.savefile['player_stats']
         
         self.obstacle_sprite = obstacle_sprite
-        self.hitbox = self.rect.inflate(0,-20)
+        self.hitbox = self.rect.inflate(-10,-20)
         
         # status 
         self.open_world_status = 'down'
@@ -95,6 +95,7 @@ class Player(Entity):
         self.frame_index += self.animation_speed
         if self.frame_index >= len(animation):
             self.frame_index = 0
+        if self.direction.x ==0 and self.direction.y == 0: self.frame_index = 0
         self.image = animation[int(self.frame_index)]
         # self.image = pygame.transform.scale(self.image,(TILE_SIZE,TILE_SIZE))
         self.rect = self.image.get_rect(center = self.hitbox.center)
@@ -144,7 +145,8 @@ class Player(Entity):
         ammo_bar_surface.blit(remaining_ammo_surface, (1,1))
         ammo_bar_position = (10, 40)
         display_surface.blit(ammo_bar_surface, ammo_bar_position)
-        
+    
+            
     def draw_cur_weapon(self):
         display_surface = pygame.display.get_surface()
         
@@ -235,6 +237,7 @@ class Player(Entity):
             self.move(self.speed)
             self.draw_health_bar()
             self.draw_ammo_bar()
+            # self.draw_eddie_number()
             self.draw_cur_weapon()
             self.get_open_world_status()
             self.animate()

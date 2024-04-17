@@ -14,9 +14,11 @@ class Game:
         # self.level = Level()
         self.control = Control()
         self.landing_page = LandingPage(self.control)
-        
+        print("Game Initialized")
     def run(self):
         while True: 
+            if self.control.game_state == 'landing_page':
+                self.landing_page.run()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.control.update_save_file(self.control.current_level)

@@ -28,12 +28,15 @@ class LandingPage:
         
     def run(self):
         while True:
+            print('landing page running')
             self.draw()
             for event in pygame.event.get():
+                print(event)
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    print('mouse clicked')
                     if self.new_game_button.collidepoint(event.pos):
                         
                         self.control.update_game_state('new')

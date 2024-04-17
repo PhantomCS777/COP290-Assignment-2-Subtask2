@@ -9,6 +9,7 @@ from debugger import debug
 from enemydrop import Loot
 from menu import PauseMenu
 from util import *
+import random 
 class Level:
     def __init__(self,savefile):
         # display surface 
@@ -17,7 +18,7 @@ class Level:
         # sprite groups 
         self.visible_sprite = YOrderCameraGroup()
         self.obstacle_sprite = pygame.sprite.Group()
-        
+        self.weapon_sprite = pygame.sprite.Group()
         self.cur_weapon = None 
         self.attack_sprites = pygame.sprite.Group()
         self.attackable_sprites = pygame.sprite.Group()
@@ -97,7 +98,7 @@ class Level:
 
     def regen_ammo(self):
         if self.player.stats['ammunition'] < self.player.max_stats['ammunition']:
-            self.player.stats['ammunition'] += 0.01
+            self.player.stats['ammunition'] += 0.1
             self.player.stats['ammunition'] = min(self.player.stats['ammunition'],self.player.max_stats['ammunition'])
             self.player.stats['ammunition'] = max(self.player.stats['ammunition'],0)
             
@@ -125,6 +126,8 @@ class Level:
                     self.after_loot(loot)
                     loot.kill()
                     print('loot_taken')
+                else:
+                    loot.rect.center = loot.center + random.choice([pygame.math.Vector2(0,0),pygame.math.Vector2(0,-2)])
                             
     
     def after_loot(self,loot):
@@ -141,7 +144,25 @@ class Level:
             print("player health is ",self.player.stats['health'])
     def toggle_pause(self):
         self.game_paused = not self.game_paused
-        pass  
+        pass
+    def draw_pause_button(self):
+        pause_button_image = pygame.image.load('../graphics/pause_button.png').convert_alpha()
+        pause_button_image = pygame.transform.scale(pause_button_image,(TILE_SIZE,TILE_SIZE))
+        pause_button_rect = pause_button_image.get_rect()
+        pause_button_rect.topleft = (10, 60)
+        self.display_surface.blit(pause_button_image, pause_button_rect)
+    def draw_eddie_number(self):
+        eddie_image = pygame.image.load('../graphics/eddie.png').convert_alpha()
+        eddie_image = pygame.transform.scale(eddie_image, (TILE_SIZE, TILE_SIZE))
+        eddie_rect = eddie_image.get_rect()
+        eddie_rect.topleft = (10, TILE_SIZE*2)
+        self.display_surface.blit(eddie_image, eddie_rect)
+
+        font = pygame.font.Font(None, 24)
+        eddie_count_text = font.render(str(self.player.stats['eddie']), True, (255, 255, 255))
+        eddie_count_rect = eddie_count_text.get_rect()
+        eddie_count_rect.topleft = (10 + TILE_SIZE, TILE_SIZE*2+20)
+        self.display_surface.blit(eddie_count_text, eddie_count_rect)
         
     def run(self):
         # updates and draws the game
@@ -154,11 +175,15 @@ class Level:
             
             
         else:
+            
             self.visible_sprite.draw(self.player)
+            # self.weapon_sprite.draw(self.display_surface)
             self.visible_sprite.update()
             self.visible_sprite.enemy_update(self.player)
             self.player_atk_logic()
             self.regen_ammo()
+            self.draw_pause_button()
+            self.draw_eddie_number()
               
         
         

@@ -10,9 +10,11 @@ class PauseMenu():
         
         self.display_surface = pygame.display.get_surface()
         self.player = player 
+        self.menu_bg = pygame.image.load('../graphics/pause_menu.png').convert_alpha() 
+        self.menu_bg = pygame.transform.scale(self.menu_bg,(self.display_surface.get_width(),self.display_surface.get_height())) 
         
     def display(self):
-        self.display_surface.fill('Red')
+        self.display_surface.blit(self.menu_bg,(0,0))
         
 
 class UpgradeMenu:
@@ -24,24 +26,6 @@ class UpgradeMenu:
         self.u_check = False 
         self.menuimg = pygame.image.load('../graphics/upgrade_menu.png').convert_alpha()
         self.menuimg = pygame.transform.scale(self.menuimg,(self.display_surface.get_width(),self.display_surface.get_height()))
-        # current max stats 
-        self.current_max_health = self.player.savefile['player_max_stats']['health']
-        self.current_max_ammunition = self.player.savefile['player_max_stats']['ammunition']
-        self.current_eddie = self.player.stats['eddie']
-        self.current_weapon = self.player.weapon
-        
-        self.current_glove = self.player.savefile['player_current_weapon']['1']
-        self.cur_glove_lvl = self.player.savefile['player_weapon_stats'][self.current_glove]['weapon_level']
-        self.current_gun = self.player.savefile['player_current_weapon']['2']
-        self.cur_gun_lvl = self.player.savefile['player_weapon_stats'][self.current_gun]['weapon_level']
-        
-        self.check_max_glove = True
-        self.check_max_gun = True
-        
-        self.nxt_glove = None 
-        self.nxt_gun = None 
-        self.orig_glove_lvl = self.cur_glove_lvl
-        self.orig_gun_lvl = self.cur_gun_lvl
         
         # limit to upgrades 
         self.max_allowed_health = 200 
@@ -49,19 +33,9 @@ class UpgradeMenu:
         self.max_gun_lvl = 2
         self.max_glove_lvl = 2
         
-        if self.cur_glove_lvl < self.max_glove_lvl:
-            self.check_max_glove = False
-            self.nxt_glove = self.current_glove.removesuffix(str(self.cur_glove_lvl)) + str(self.cur_glove_lvl+1)
-        else:
-            self.nxt_glove = self.current_glove
-        if self.cur_gun_lvl < self.max_gun_lvl:
-            self.check_max_gun = False
-            self.nxt_gun = self.current_gun.removesuffix(str(self.cur_gun_lvl)) + str(self.cur_gun_lvl+1)
-        else:
-            self.nxt_gun = self.current_gun
+        # current max stats 
+        self.initialize()
         
-        self.glove_cost = self.player.savefile['player_weapon_stats'][self.nxt_glove]['cost']
-        self.gun_cost = self.player.savefile['player_weapon_stats'][self.nxt_gun]['cost']   
         
         # track user input 
         self.added_health = 0 
@@ -207,6 +181,32 @@ class UpgradeMenu:
         self.display_surface.blit(mammo, mammo_rect)
         self.display_surface.blit(mglove, mglove_rect)
         self.display_surface.blit(mgun, mgun_rect)
+        
+        esc = font.render("Press: U to exit", True, (0,0,0))
+        esc_rect = esc.get_rect(midleft = self.option1.midright + pygame.math.Vector2(40,40))
+        self.display_surface.blit(esc, esc_rect)
+        
+        spc = font.render("Press Space to upgrade", True, (0,0,0))
+        spc_rect = spc.get_rect(midleft = self.option1.midright + pygame.math.Vector2(40,100))
+        self.display_surface.blit(spc, spc_rect)
+        
+        bck = font.render("Backspace to", True, (0,0,0))
+        bck2 = font.render("reverse upgrade", True, (0,0,0))
+        bck_rect = bck.get_rect(midleft = self.option1.midright + pygame.math.Vector2(40,160))
+        bck2_rect = bck2.get_rect(midleft = self.option1.midright + pygame.math.Vector2(40,200))
+        self.display_surface.blit(bck, bck_rect)
+        self.display_surface.blit(bck2, bck2_rect)
+        
+        ent = font.render("Press Enter to confirm ", True, (0,0,0))
+        ent_rect = ent.get_rect(midleft = self.option1.midright + pygame.math.Vector2(40,260))
+        self.display_surface.blit(ent, ent_rect)
+        
+        arrow = font.render("Use up and down keys", True, (0,0,0))
+        arrow2 = font.render("to navigate", True, (0,0,0))
+        arrow_rect = arrow.get_rect(midleft = self.option1.midright + pygame.math.Vector2(40,320))
+        arrow2_rect = arrow2.get_rect(midleft = self.option1.midright + pygame.math.Vector2(40,360))
+        self.display_surface.blit(arrow, arrow_rect)
+        self.display_surface.blit(arrow2, arrow2_rect)
          
     def draw(self):
         surf = pygame.display.get_surface()
@@ -341,8 +341,36 @@ class UpgradeMenu:
         text_rect = text_surface.get_rect(center=(7*self.display_surface.get_width() // 8, self.display_surface.get_height() // 16))
         self.display_surface.blit(text_surface, text_rect)
         
+    def draw_upgrade_success(self):
+        display_surface = pygame.display.get_surface()
+        size = (display_surface.get_width() // 2, display_surface.get_height() // 2)
+        overlay_surface = pygame.Surface(size, pygame.SRCALPHA)
+        overlay_surface.fill((255, 0, 0, 128))  # Translucent red color
+        display_surface.blit(overlay_surface, (WIDTH//4, HEIGTH//4))
+
+        font = pygame.font.Font(None, 36)
+        text_surface = font.render("Upgrades applied", True, (255, 255, 255))
+        
+        text_rect = text_surface.get_rect(center=(display_surface.get_width() // 2, display_surface.get_height() // 2))
+        
+        display_surface.blit(text_surface, text_rect)
+        
+        pass    
     def upgrade_menu(self):
        
+        display_surface = pygame.display.get_surface()
+        size = (display_surface.get_width() // 2, display_surface.get_height() // 2)
+        overlay_surface = pygame.Surface(size, pygame.SRCALPHA)
+        overlay_surface.fill((255, 0, 0, 128))  # Translucent red color
+        display_surface.blit(overlay_surface, (WIDTH//4, HEIGTH//4))
+
+        font = pygame.font.Font(None, 36)
+        text_surface = font.render("Press U to open upgrade menu", True, (255, 255, 255))
+        # text_surface2 = font.render("yes : press H", True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(display_surface.get_width() // 2, display_surface.get_height() // 2))
+        # text_rect2 = text_surface2.get_rect(center=(display_surface.get_width() // 2, display_surface.get_height() // 2 + 50))
+        display_surface.blit(text_surface, text_rect)
+        # display_surface.blit(text_surface2, text_rect2)
                     
         keys = pygame.key.get_pressed()
     
@@ -354,8 +382,12 @@ class UpgradeMenu:
             self.u_check = False
         if self.upgrade_check:
             self.initialize()    
+            check_enter = False 
             while True:
                 for event in pygame.event.get():
+                    check_enter = False
+                    if event.type == pygame.KEYUP and event.key == pygame.K_RETURN:
+                        check_enter = True
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         sys.exit()
@@ -373,6 +405,7 @@ class UpgradeMenu:
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
                         self.reverse_upgrade()
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                        check_enter = True
                         self.current_max_health += self.added_health
                         self.current_max_ammunition += self.added_ammo
                         self.current_eddie -= self.lost_eddie
@@ -387,7 +420,7 @@ class UpgradeMenu:
                         self.player.savefile['player_current_weapon'] = {'1':self.new_glove,'2':self.new_gun}
                         self.player.update_stats(self.player.savefile)
                         
-            
+                    
                     # display_surface = pygame.display.get_surface()
                     
                     # display_surface.fill((0, 255, 0, 50))
@@ -397,6 +430,7 @@ class UpgradeMenu:
                     self.draw()
                     self.display_current_eddie()
                     self.draw_text()
-                    
+                    if check_enter:
+                            self.draw_upgrade_success()
                 
                 pygame.display.update()
