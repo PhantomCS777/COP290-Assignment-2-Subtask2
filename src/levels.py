@@ -24,14 +24,15 @@ class Hospital(Level):
 
             font = pygame.font.Font(None, 36)
             text_surface = font.render("Do you want to heal ?:", True, (255, 255, 255))
-            text_surface2 = font.render("yes : press SPACE", True, (255, 255, 255))
+            text_surface2 = font.render("yes : press H", True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=(display_surface.get_width() // 2, display_surface.get_height() // 2))
             text_rect2 = text_surface2.get_rect(center=(display_surface.get_width() // 2, display_surface.get_height() // 2 + 50))
             display_surface.blit(text_surface, text_rect)
             display_surface.blit(text_surface2, text_rect2)
 
-            if keys[pygame.K_SPACE]:
-                self.player.stats['health'] = 100
+            if keys[pygame.K_h]:
+                self.player.stats['health'] = self.player.max_stats['health']
+                print(self.player.stats['health'])
     def create_map(self):
         pass 
 
@@ -59,40 +60,22 @@ class Level1(Level):
 
             font = pygame.font.Font(None, 36)
             text_surface = font.render("Do you want to heal ?:", True, (255, 255, 255))
-            text_surface2 = font.render("yes : press SPACE", True, (255, 255, 255))
+            text_surface2 = font.render("yes : press H", True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=(display_surface.get_width() // 2, display_surface.get_height() // 2))
             text_rect2 = text_surface2.get_rect(center=(display_surface.get_width() // 2, display_surface.get_height() // 2 + 50))
             display_surface.blit(text_surface, text_rect)
             display_surface.blit(text_surface2, text_rect2)
             
-            if keys[pygame.K_SPACE]:
-                self.player.stats['health'] = 100
+            if keys[pygame.K_h]:
+                self.player.stats['health'] = self.player.max_stats['health']
+                print(self.player.stats['health'])
         
     def update_level(self):
         if pygame.sprite.spritecollide(self.player,self.door_to_level2,False):
                 return 'level-2'
         return self.level_name
 
-    def heal(self):
-        keys = pygame.key.get_pressed()
-        
-        if pygame.sprite.spritecollide(self.player,self.hospital,False):
-            display_surface = pygame.display.get_surface()
-            size = (display_surface.get_width() // 2, display_surface.get_height() // 2)
-            overlay_surface = pygame.Surface(size, pygame.SRCALPHA)
-            overlay_surface.fill((255, 0, 0, 128))  # Translucent red color
-            display_surface.blit(overlay_surface, (WIDTH//4, HEIGTH//4))
-        
-            font = pygame.font.Font(None, 36)
-            text_surface = font.render("Do you want to heal ?:", True, (255, 255, 255))
-            text_surface2 = font.render("yes : press SPACE", True, (255, 255, 255))
-            text_rect = text_surface.get_rect(center=(display_surface.get_width() // 2, display_surface.get_height() // 2))
-            text_rect2 = text_surface2.get_rect(center=(display_surface.get_width() // 2, display_surface.get_height() // 2 + 50))
-            display_surface.blit(text_surface, text_rect)
-            display_surface.blit(text_surface2, text_rect2)
-            
-            if keys[pygame.K_SPACE]:
-                self.player.stats['health'] = 100
+    
     def up_menu(self):
         if pygame.sprite.spritecollide(self.player,self.upgrade_shop,False):
             self.upgrade_menu.upgrade_menu()                       

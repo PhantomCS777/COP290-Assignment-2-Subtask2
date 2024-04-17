@@ -1,16 +1,21 @@
 # game setup
 GAME_NAME = 'Game'
 WIDTH    = 1280	
-HEIGTH   = 720
+HEIGTH   = 720 
 FPS      = 120
 TILE_SIZE = 64
 PLAYER_SPEED = 5
 
 
 WEAPONS = {
-    'glove':{'cooldown':200,'dmg':20,'graphic':'../graphics/gloves.png','weapon_type':'melee','atk_cost':1},
-    'gun': {'cooldown':100,'dmg':40,'graphic':'../graphics/gun.png','weapon_type':'ranged','atk_cost':5},   
+    'glove':{'cooldown':200,'dmg':20,'graphic':'../graphics/gloves.png','weapon_type':'melee','atk_cost':1,'weapon_level':1},
+    'gun': {'cooldown':100,'dmg':40,'graphic':'../graphics/gun.png','weapon_type':'ranged','atk_cost':5,'weapon_level':1},   
     }   
+
+WEAPON_UPGRADES = {
+    'glove2':{'cooldown':200,'dmg':40,'graphic':'../graphics/gloves2.png','weapon_type':'melee','atk_cost':1},
+    'gun2': {'cooldown':100,'dmg':60,'graphic':'../graphics/gun2.png','weapon_type':'ranged','atk_cost':4},   
+    }
 
 ENEMY_BASE = {
     'garbage' : {'health':100,'level':2,'dmg':10,'atk_type':'garbage-atk','atk_sound':None,'atk_radius':26,'notice_radius':360,'speed':2,'pushback_res':1,'drop_rate':0.6},

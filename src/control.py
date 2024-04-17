@@ -88,6 +88,7 @@ class Control:
             
             save_data["level_data"]["current_level"] = level.level_name
 
+            save_data["player_current_weapon"] = player.savefile["player_current_weapon"]
             
 
             with open(save_file_path, "w") as save_file:

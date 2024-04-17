@@ -20,7 +20,7 @@ class Player(Entity):
         self.savefile = savefile 
         
         # self.stats = self.savefile['player_stats']
-        self.update_stats(self.savefile)
+        
         self.obstacle_sprite = obstacle_sprite
         self.hitbox = self.rect.inflate(0,-20)
         
@@ -40,44 +40,62 @@ class Player(Entity):
         
         
         self.weapon_index = 0 
-        self.weapon = list(WEAPONS.keys())[self.weapon_index]
+        # self.weapon = self.savefile['player_current_weapon'][str(self.weapon_index+1)]
+        self.update_stats(self.savefile)
         self.weapon_images = {}
-        for w in WEAPONS:
+        for w in self.savefile['player_weapon_stats'].keys():
             self.weapon_images[w] = pygame.transform.scale(weapon_image(w),(TILE_SIZE,TILE_SIZE))
     def update_stats(self,savefile):
         self.savefile = savefile
         self.stats = self.savefile['player_stats']
         self.max_stats = self.savefile['player_max_stats']
+        self.weapon = self.savefile['player_current_weapon'][str(self.weapon_index+1)]
+        
+    
+        
     def draw_health_bar(self):
         
-        health_width = max(int((self.stats['health'] / self.max_stats['health']) * TILE_SIZE*4),0)
+        health_width = max(int((self.stats['health'])),0)
         display_surface = pygame.display.get_surface()
-        health_bar_surface = pygame.Surface((self.max_stats['health'], 5))
+        health_bar_surface = pygame.Surface((self.max_stats['health'], 19))
         health_bar_surface.fill((255, 0, 0))  
         
+         
+        health_bar_surface.set_colorkey((0, 0, 0))  # Set black color as transparent
         
-        remaining_health_surface = pygame.Surface((health_width, 20))
-        remaining_health_surface.fill((0, 255, 0))  # Fill the remaining health with green color
+        # Add border to health bar
+        border_rect = pygame.Rect(0, 0, self.max_stats['health'], 20)
+        pygame.draw.rect(health_bar_surface, (255, 255, 255), border_rect, 2)
         
         
-        health_bar_surface.blit(remaining_health_surface, (0, 0))
+        
+        remaining_health_surface = pygame.Surface((health_width, 17))
+        remaining_health_surface.fill((0, 255, 0)) 
+        
+        
+        health_bar_surface.blit(remaining_health_surface, (1, 1))
         
         
         health_bar_position = (10, 10)
         
-        # Draw the health bar overlay on the main surface
+      
         display_surface.blit(health_bar_surface, health_bar_position)
+    
+        
     def draw_ammo_bar(self):
-        ammo_width = int((self.stats['ammunition'] / self.max_stats['ammunition']) * TILE_SIZE*4)
+        ammo_width = max(int((self.stats['ammunition'])),0)
         display_surface = pygame.display.get_surface()
-        ammo_bar_surface = pygame.Surface((self.max_stats['ammunition'], 5))
+        ammo_bar_surface = pygame.Surface((self.max_stats['ammunition'], 19))
         ammo_bar_surface.fill((255, 0, 0))  
+        ammo_bar_surface.set_colorkey((0,0,0))
         
+        border_rect = pygame.Rect(0, 0, self.max_stats['ammunition'], 20)
+        pygame.draw.rect(ammo_bar_surface, (255, 255, 255), border_rect, 2)
         
-        remaining_ammo_surface = pygame.Surface((ammo_width, 20))
-        remaining_ammo_surface.fill((0, 255, 0))
-        ammo_bar_surface.blit(remaining_ammo_surface, (0, 0))
-        ammo_bar_position = (10, 20)
+        remaining_ammo_surface = pygame.Surface((ammo_width, 17))
+        remaining_ammo_surface.fill((0, 0, 255))
+        ammo_bar_surface.blit(remaining_ammo_surface, (1,1))
+        ammo_bar_position = (10, 40)
         display_surface.blit(ammo_bar_surface, ammo_bar_position)
         
     def draw_cur_weapon(self):
@@ -111,26 +129,26 @@ class Player(Entity):
             
         # melee attack inp 
         if (keys[pygame.K_SPACE] or pygame.mouse.get_pressed()[0]) and not self.attacking:
+            print(self.player_weapon_attr('atk_cost'))
             if self.stats['ammunition'] >= self.player_weapon_attr('atk_cost'):
                 self.stats['ammunition'] -= self.player_weapon_attr('atk_cost')
                 self.attacking = True 
                 self.attack_time = pygame.time.get_ticks()
                 self.create_attack()
             
-            print('attack initiated')
             
         # gun 
         if keys[pygame.K_e] and not self.attacking:
             self.attacking = True 
             self.attack_time = pygame.time.get_ticks()
-            print('gun')
+            
         
         # weapon switch
         for i in range(len(WEAPONS)):
             if keys[getattr(pygame,f'K_{i+1}')]:
                 self.weapon_index = i 
-                self.weapon = list(WEAPONS.keys())[self.weapon_index]
-                print(self.weapon)
+        self.weapon = self.savefile['player_current_weapon'][str(self.weapon_index+1)]
+                
             
     def cooldown(self):
         cur_time = pygame.time.get_ticks()  
@@ -178,7 +196,7 @@ class Player(Entity):
             self.draw_health_bar()
             self.draw_ammo_bar()
             self.draw_cur_weapon()
-            print(self.stats['health'])
+            
         else:
             self.death_scren()
             keys = pygame.key.get_pressed()
