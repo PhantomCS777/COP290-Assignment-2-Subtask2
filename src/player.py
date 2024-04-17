@@ -6,8 +6,32 @@ from util import *
 class Player(Entity):
     def __init__(self,position,groups,obstacle_sprite,create_attack,destroy_attack,level,savefile):
         super().__init__(groups)
-        self.image = pygame.image.load('../graphics/player.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image,(TILE_SIZE,TILE_SIZE))
+        
+        self.sheet = Spritesheet('../graphics/player.png',"player")
+        self.sheet_idle = Spritesheet('../graphics/player_idle.png',"player_idle")
+        self.frame_index = 0
+        self.animation_speed = 0.1
+        self.animations = {
+            'down_attack':[self.sheet.parse_sprite(f'frame_down_{i}') for i in range(4)],
+            'left_attack':[self.sheet.parse_sprite(f'frame_left_{i}') for i in range(4)],
+            'right_attack':[self.sheet.parse_sprite(f'frame_right_{i}') for i in range(4)],
+            'up_attack':[self.sheet.parse_sprite(f'frame_up_{i}') for i in range(4)],
+            'down' : [self.sheet_idle.parse_sprite(f'frame_down_{i}') for i in range(4)],
+            'left' : [self.sheet_idle.parse_sprite(f'frame_left_{i}') for i in range(4)],
+            'right' : [self.sheet_idle.parse_sprite(f'frame_right_{i}') for i in range(4)],
+            'up' : [self.sheet_idle.parse_sprite(f'frame_up_{i}') for i in range(4)],
+            'down_idle' : [self.sheet_idle.parse_sprite(f'frame_down_{0}') for i in range(4)],
+            'left_idle' : [self.sheet_idle.parse_sprite(f'frame_left_{0}') for i in range(4)],
+            'right_idle' : [self.sheet_idle.parse_sprite(f'frame_right_{0}') for i in range(4)],
+            'up_idle' : [self.sheet_idle.parse_sprite(f'frame_up_{0}') for i in range(4)],
+            
+            }
+        self.frames_down = [self.sheet.parse_sprite(f'frame_down_{i}') for i in range(4)]
+        self.frame_left = [self.sheet.parse_sprite(f'frame_left_{i}') for i in range(4)]
+        self.frame_right = [self.sheet.parse_sprite(f'frame_right_{i}') for i in range(4)]
+        self.frame_up = [self.sheet.parse_sprite(f'frame_up_{i}') for i in range(4)]
+        self.image = self.animations['down_idle'][0]
+        # self.image = pygame.transform.scale(self.image,(TILE_SIZE,TILE_SIZE))
         self.rect = self.image.get_rect(topleft = position)
         
         # movement
@@ -51,7 +75,30 @@ class Player(Entity):
         self.max_stats = self.savefile['player_max_stats']
         self.weapon = self.savefile['player_current_weapon'][str(self.weapon_index+1)]
         
-    
+    def get_open_world_status(self):
+        
+        if self.direction.x == 0 and self.direction.y ==0 : 
+            if not 'idle' in self.open_world_status and not 'attack' in self.open_world_status:
+                self.open_world_status = self.open_world_status + '_idle'
+        if self.attacking:
+            if not 'attack' in self.open_world_status:
+                if 'idle' in self.open_world_status:
+                    self.open_world_status = self.open_world_status.replace('idle','attack')
+                else:
+                    self.open_world_status = self.open_world_status + '_attack' 
+        else:
+            if 'attack' in self.open_world_status:
+                self.open_world_status = self.open_world_status.replace('_attack','')
+                
+    def animate(self):
+        animation = self.animations[self.open_world_status]
+        self.frame_index += self.animation_speed
+        if self.frame_index >= len(animation):
+            self.frame_index = 0
+        self.image = animation[int(self.frame_index)]
+        # self.image = pygame.transform.scale(self.image,(TILE_SIZE,TILE_SIZE))
+        self.rect = self.image.get_rect(center = self.hitbox.center)
+          
         
     def draw_health_bar(self):
         
@@ -134,14 +181,7 @@ class Player(Entity):
                 self.stats['ammunition'] -= self.player_weapon_attr('atk_cost')
                 self.attacking = True 
                 self.attack_time = pygame.time.get_ticks()
-                self.create_attack()
-            
-            
-        # gun 
-        if keys[pygame.K_e] and not self.attacking:
-            self.attacking = True 
-            self.attack_time = pygame.time.get_ticks()
-            
+                self.create_attack()    
         
         # weapon switch
         for i in range(len(WEAPONS)):
@@ -196,6 +236,8 @@ class Player(Entity):
             self.draw_health_bar()
             self.draw_ammo_bar()
             self.draw_cur_weapon()
+            self.get_open_world_status()
+            self.animate()
             
         else:
             self.death_scren()
