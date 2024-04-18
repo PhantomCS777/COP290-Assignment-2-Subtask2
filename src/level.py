@@ -84,8 +84,9 @@ class Level:
                                 elif col == '391': monster_name = 'spirit'
                                 elif col == '392': monster_name ='raccoon'
                                 else: monster_name = 'squid'
+                                enem = random.choice(['air_pollution','water_pollution','noise_pollution'])
                                 OpenWEnemy(
-                                    'garbage',
+                                    enem,
                                     (x,y),
                                     [self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.loot_sprites,self.visible_sprite,self.dmg_to_player)
     def get_player(self):
@@ -156,7 +157,7 @@ class Level:
         self.game_paused = not self.game_paused
         pass
     def draw_pause_button(self):
-        pause_button_image = pygame.image.load('../graphics/pause_button.png').convert_alpha()
+        pause_button_image = pygame.image.load('../graphics/menu/pause_button.png').convert_alpha()
         pause_button_image = pygame.transform.scale(pause_button_image,(TILE_SIZE,TILE_SIZE))
         pause_button_rect = pause_button_image.get_rect()
         pause_button_rect.topleft = (10, 60)
@@ -174,7 +175,7 @@ class Level:
         
             
     def draw_eddie_number(self):
-        eddie_image = pygame.image.load('../graphics/eddie.png').convert_alpha()
+        eddie_image = pygame.image.load('../graphics/particle/eddie.png').convert_alpha()
         eddie_image = pygame.transform.scale(eddie_image, (TILE_SIZE, TILE_SIZE))
         eddie_rect = eddie_image.get_rect()
         eddie_rect.topleft = (10, TILE_SIZE*2)

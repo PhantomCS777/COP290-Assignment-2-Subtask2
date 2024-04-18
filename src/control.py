@@ -146,8 +146,8 @@ class Control:
                 
             if self.current_level_name == 'level-1':
                 self.current_level = self.level1
-                # self.level1.run()
-                self.Home.run()
+                self.level1.run()
+                # self.Home.run()
                 self.current_level_name = self.level1.update_level()
                 self.current_level.new_update()
                 if self.current_level_name != 'level-1':

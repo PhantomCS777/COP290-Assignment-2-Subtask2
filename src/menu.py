@@ -10,7 +10,7 @@ class PauseMenu():
         
         self.display_surface = pygame.display.get_surface()
         self.player = player 
-        self.menu_bg = pygame.image.load('../graphics/pause_menu.png').convert_alpha() 
+        self.menu_bg = pygame.image.load('../graphics/menu/pause_menu.png').convert_alpha() 
         self.menu_bg = pygame.transform.scale(self.menu_bg,(self.display_surface.get_width(),self.display_surface.get_height())) 
         
     def display(self):
@@ -24,7 +24,7 @@ class UpgradeMenu:
         self.player = player
         self.upgrade_check = False
         self.u_check = False 
-        self.menuimg = pygame.image.load('../graphics/upgrade_menu.png').convert_alpha()
+        self.menuimg = pygame.image.load('../graphics/menu/upgrade_menu.png').convert_alpha()
         self.menuimg = pygame.transform.scale(self.menuimg,(self.display_surface.get_width(),self.display_surface.get_height()))
         
         # limit to upgrades 

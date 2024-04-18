@@ -26,7 +26,7 @@ def import_folder(path):
 
 
 def weapon_image(name):
-    return pygame.image.load(f'../graphics/{name}.png').convert_alpha()
+    return pygame.image.load(f'../graphics/weapons/{name}.png').convert_alpha()
 
 
 

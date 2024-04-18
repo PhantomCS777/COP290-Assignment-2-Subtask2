@@ -13,25 +13,27 @@ class OpenWEnemy(Entity):
         self.sprite_type = 'enemy' 
         
         
-        self.import_graphics(enemy_name)
+        # self.import_graphics(enemy_name)
         self.status = 'idle'
-        self.image = self.animations[self.status][self.frame_index]
-        self.rect = self.image.get_rect(topleft = position)
+        # self.image = self.animations[self.status][self.frame_index]
+        # self.rect = self.image.get_rect(topleft = position)
+        self.enemy_name=  enemy_name
         self.dmg_to_player = dmg_to_player
-        self.hitbox = self.rect.inflate(0,-10)
+        
         self.obstacle_sprite = obstacle_sprites
         self.loot_sprites = loot_sprites
         self.visible_sprite = visible_sprite
         # enemy stats 
-
-        self.sheet = Spritesheet(f'../graphics/noise_pollution.png','noise_pollution')
+        ename = self.enemy_name
+        self.sheet = Spritesheet(f'../graphics/enemy/{ename}.png',ename)
         
         self.frame_index = 0
         self.animatino_speed = 0.1  
         
-        self.animation = [self.sheet.parse_sprite(f'frame_{i}') for i in range(8)] 
-        
-        self.enemy_name=  enemy_name
+        self.animation = [self.sheet.parse_sprite(f'frame_{i}') for i in range(len(self.sheet.data["frames"]))] 
+        self.image = self.animation[self.frame_index]
+        self.rect = self.image.get_rect(topleft = position)
+        self.hitbox = self.rect.inflate(0,-10)
         enemy_data = ENEMY_BASE[self.enemy_name]
         self.health = enemy_data['health']
         
@@ -57,13 +59,13 @@ class OpenWEnemy(Entity):
         self.initial_delay = 50
         
         
-    def import_graphics(self,name):
-        self.animations = {'idle':[],'move':[],'atk':[]}
-        path = f'../graphics/{name+".png"}'
-        for animation in self.animations.keys():
-            img = pygame.image.load(path).convert_alpha()
-            img = pygame.transform.scale(img,(TILE_SIZE,TILE_SIZE))
-            self.animations[animation].append(img)
+    # def import_graphics(self,name):
+    #     self.animations = {'idle':[],'move':[],'atk':[]}
+    #     path = f'../graphics/{name+".png"}'
+    #     for animation in self.animations.keys():
+    #         img = pygame.image.load(path).convert_alpha()
+    #         img = pygame.transform.scale(img,(TILE_SIZE,TILE_SIZE))
+    #         self.animations[animation].append(img)
     
     def get_player_dist_dir(self,player):
         enemy_loc = pygame.math.Vector2(self.rect.center)

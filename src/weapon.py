@@ -44,7 +44,7 @@ class Weapon(pygame.sprite.Sprite):
     def get_img(self,dir):
         w_path_name = self.weapon_name + '_' + dir + '.png'
         
-        weapon_path = f'../graphics/{w_path_name}'
+        weapon_path = f'../graphics/weapons/{w_path_name}'
         self.image = pygame.image.load(weapon_path).convert_alpha()
         # self.image = pygame.transform.scale(self.image,(TILE_SIZE,TILE_SIZE))
     

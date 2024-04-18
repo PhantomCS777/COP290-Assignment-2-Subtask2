@@ -9,11 +9,13 @@ class LandingPage:
         self.control = control 
         self.new_game_button = pygame.Rect(100, 200, 200, 50)
         self.new_game_text = self.font.render('New Game', True, (255, 255, 255))
-        
+        self.thumbnail = pygame.image.load('../graphics/landing_page/thumbnail.png')
+        self.thumbnail = pygame.transform.scale(self.thumbnail,(WIDTH,HEIGTH))
         self.load_game_button = pygame.Rect(100, 300, 200, 50)
         self.load_game_text = self.font.render('Load Game', True, (255, 255, 255))
         self.clock = pygame.time.Clock()
     def draw(self):
+        
         pygame.draw.rect(self.display_surface, (0, 255, 0), self.new_game_button)
         self.display_surface.blit(self.new_game_text, (self.new_game_button.x + 50, self.new_game_button.y + 10))
         
@@ -28,7 +30,8 @@ class LandingPage:
         
     def run(self):
         while True:
-            print('landing page running')
+            # print('landing page running')
+            self.display_surface.blit(self.thumbnail, (0,0))
             self.draw()
             for event in pygame.event.get():
                 print(event)

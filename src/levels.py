@@ -5,6 +5,7 @@ from player import Player
 from enemy import OpenWEnemy
 from tile import Tile
 from menu import UpgradeMenu
+import random
 from pytmx.util_pygame import load_pygame
 
 class Hospital(Level):
@@ -98,7 +99,8 @@ class Level1(Level):
                 if column == 'p':
                     self.player = Player((x,y),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self,self.savefile)
                 if column == 'g':
-                    OpenWEnemy('garbage',(x,y),[self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.loot_sprites,self.visible_sprite,self.dmg_to_player)
+                    enem = random.choice(['air_pollution','water_pollution','noise_pollution'])
+                    OpenWEnemy(enem,(x,y),[self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.loot_sprites,self.visible_sprite,self.dmg_to_player)
                 if column == 'd':
                     img = pygame.image.load('../graphics/door2.png').convert_alpha()
                     img = pygame.transform.scale(img,(TILE_SIZE,TILE_SIZE))
@@ -152,8 +154,8 @@ class Home(Level):
                     # pass
         for layer in gameMap.objectgroups:
             for object in layer: 
-                
-                Tile((2*object.x,2*object.y),[self.visible_sprite,self.obstacle_sprite],'objec',object.image)  
+                print(dir(object))
+                Tile((object.x,object.y),[self.visible_sprite,self.obstacle_sprite],'objec',(lambda x:pygame.transform.scale(x,(object.width,object.height)))(object.image))  
             
             
             

@@ -1,7 +1,7 @@
 import pygame 
 from settings import *
 from entity import Entity
-
+from util import *
 
 
 
@@ -14,12 +14,16 @@ class Projectile(Entity):
         
         self.speed = 15
         projectile_img = 'bullet_' + self.base + '.png'
-        self.image = pygame.image.load(f'../graphics/{projectile_img}').convert_alpha()
-        self.image = pygame.transform.scale(self.image,(TILE_SIZE//4,TILE_SIZE//4))
+        # self.image = pygame.image.load(f'../graphics/{projectile_img}').convert_alpha()
+        # self.image = pygame.transform.scale(self.image,(TILE_SIZE//4,TILE_SIZE//4))
+        self.sheet = Spritesheet(f'../graphics/particle/projectile_sheet.png','projectile')
+        self.animations = [self.sheet.parse_sprite(f'frame_{i}') for i in range(9)]
+        
+        self.frame_index = 0
         self.attackable_sprites = attackable_sprites
         self.obstacle_sprite = obstacle_sprites
         self.sprtie_type = 'weapon'
-        
+        self.animate()
         if self.base == 'down':
             self.rect = self.image.get_rect(midtop = weapon.rect.midbottom)
             self.direction = pygame.math.Vector2(0,1)
@@ -34,7 +38,11 @@ class Projectile(Entity):
             self.rect = self.image.get_rect(midright = weapon.rect.midleft)
         
         self.hitbox = self.rect.inflate(0,-10)  
-        
+    def animate(self):
+        self.frame_index += 0.2
+        if self.frame_index >= len(self.animations):
+            self.frame_index = 0
+        self.image = self.animations[int(self.frame_index)]    
     def open_world_collision(self, direction):
         
         if direction == 'horizontal':
@@ -61,4 +69,5 @@ class Projectile(Entity):
             
     def update(self):
         self.move(self.speed)
+        self.animate()
         
