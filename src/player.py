@@ -2,7 +2,7 @@ import pygame
 from settings import *
 from entity import Entity
 from util import *
-
+import math
 class Player(Entity):
     def __init__(self,position,groups,obstacle_sprite,create_attack,destroy_attack,level,savefile):
         super().__init__(groups)
@@ -47,6 +47,7 @@ class Player(Entity):
         
         self.obstacle_sprite = obstacle_sprite
         self.hitbox = self.rect.inflate(-10,-20)
+        self.orig_hitbox = self.hitbox.copy()
         
         # status 
         self.open_world_status = 'down'
@@ -81,6 +82,8 @@ class Player(Entity):
             if not 'idle' in self.open_world_status and not 'attack' in self.open_world_status:
                 self.open_world_status = self.open_world_status + '_idle'
         if self.attacking:
+            self.direction.x = 0 
+            self.direction.y = 0 
             if not 'attack' in self.open_world_status:
                 if 'idle' in self.open_world_status:
                     self.open_world_status = self.open_world_status.replace('idle','attack')
@@ -98,6 +101,16 @@ class Player(Entity):
         if self.direction.x ==0 and self.direction.y == 0: self.frame_index = 0
         self.image = animation[int(self.frame_index)]
         # self.image = pygame.transform.scale(self.image,(TILE_SIZE,TILE_SIZE))
+        # print(self.vulnerable)
+        if not self.vulnerable:
+            
+            ttaken = pygame.time.get_ticks()
+            alpha = (lambda x: 255 if math.sin(x) > 0 else 0)(ttaken)
+            
+            self.image.set_alpha(alpha)
+        else:
+            alpha = 255
+            self.image.set_alpha(alpha)
         self.rect = self.image.get_rect(center = self.hitbox.center)
           
         
@@ -175,9 +188,10 @@ class Player(Entity):
             self.open_world_status = 'right'
         else:
             self.direction.x = 0
-            
+        
+        # or pygame.mouse.get_pressed()[0]
         # melee attack inp 
-        if (keys[pygame.K_SPACE] or pygame.mouse.get_pressed()[0]) and not self.attacking:
+        if (keys[pygame.K_SPACE] ) and not self.attacking:
             print(self.player_weapon_attr('atk_cost'))
             if self.stats['ammunition'] >= self.player_weapon_attr('atk_cost'):
                 self.stats['ammunition'] -= self.player_weapon_attr('atk_cost')
@@ -212,7 +226,7 @@ class Player(Entity):
    
     def player_alive(self):
         return self.stats['health'] > 0        
-    def death_scren(self):
+    def death_screen(self):
         display_surface = pygame.display.get_surface()
         overlay_surface = pygame.Surface(display_surface.get_size(), pygame.SRCALPHA)
         overlay_surface.fill((255, 0, 0, 128))  # Translucent red color
@@ -232,18 +246,20 @@ class Player(Entity):
     
     def update(self):
         if self.player_alive():
+            
             self.open_world_input()
+            self.get_open_world_status()
             self.cooldown()
             self.move(self.speed)
             self.draw_health_bar()
             self.draw_ammo_bar()
             # self.draw_eddie_number()
             self.draw_cur_weapon()
-            self.get_open_world_status()
+            
             self.animate()
             
         else:
-            self.death_scren()
+            # self.death_scren()
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
                 self.level.reset = True

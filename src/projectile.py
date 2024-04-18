@@ -12,7 +12,7 @@ class Projectile(Entity):
         self.base = weapon.weapon_tip 
         
         
-        self.speed = 10
+        self.speed = 15
         projectile_img = 'bullet_' + self.base + '.png'
         self.image = pygame.image.load(f'../graphics/{projectile_img}').convert_alpha()
         self.image = pygame.transform.scale(self.image,(TILE_SIZE//4,TILE_SIZE//4))

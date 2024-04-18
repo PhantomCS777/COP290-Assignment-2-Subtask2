@@ -43,7 +43,7 @@ class Spritesheet:
 
 
     def get_sprite(self, x, y, w, h):
-        sprite = pygame.Surface((w, h))
+        sprite = pygame.Surface((w, h),pygame.SRCALPHA)
         sprite.set_colorkey((0,0,0))
         sprite.blit(self.sprite_sheet,(0, 0),(x, y, w, h))
         return sprite

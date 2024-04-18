@@ -2,9 +2,9 @@
 GAME_NAME = 'Game'
 WIDTH    = 1280	
 HEIGTH   = 720 
-FPS      = 120
+FPS      = 60
 TILE_SIZE = 64
-PLAYER_SPEED = 5
+PLAYER_SPEED = 8
 
 
 WEAPONS = {
@@ -18,7 +18,7 @@ WEAPON_UPGRADES = {
     }
 
 ENEMY_BASE = {
-    'garbage' : {'health':100,'level':2,'dmg':10,'atk_type':'garbage-atk','atk_sound':None,'atk_radius':26,'notice_radius':360,'speed':2,'pushback_res':1,'drop_rate':0.6},
+    'garbage' : {'health':100,'level':2,'dmg':10,'atk_type':'garbage-atk','atk_sound':None,'atk_radius':26,'notice_radius':360,'speed':4,'pushback_res':1,'drop_rate':0.6},
     'dust_cloud':{'health':100,'level':2,'dmg':10,'atk_type':'dust-atk','atk_sound':None,'atk_radius':26,'notice_radius':400,'speed':8,'pushback_res':1,'drop_rate':0.65},
 }
 

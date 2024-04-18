@@ -31,6 +31,7 @@ class Level:
         self.create_map()
         
         self.pause_menu = PauseMenu(self.player)
+        self.pause_button_check = False 
     
     def create_map(self):
         layouts = {
@@ -94,7 +95,7 @@ class Level:
         if self.player.player_weapon_attr('weapon_type') == 'ranged':  
             Projectile(self.cur_weapon,[self.visible_sprite,self.attack_sprites],self.attackable_sprites,self.obstacle_sprite)
         
-        print('attack_done')       
+               
 
     def regen_ammo(self):
         if self.player.stats['ammunition'] < self.player.max_stats['ammunition']:
@@ -107,6 +108,7 @@ class Level:
         if self.cur_weapon:
             self.cur_weapon.kill()
             self.cur_weapon = None 
+            # self.player.hitbox = self.player.orig_hitbox
             print('attack_destroyed')
     
     def player_atk_logic(self):
@@ -120,6 +122,12 @@ class Level:
                             target.take_dmg(self.player)
                         else:
                             pass
+                col_obstacle = pygame.sprite.spritecollide(attack,self.obstacle_sprite,False)
+                if col_obstacle:
+                    # self.player.open_world_status = self.player.open_world_status.split('_')[0]+'_idle' 
+                    # self.player.attacking = False 
+                    # print(self.player.open_world_status)
+                    attack.kill()
         if self.loot_sprites:
             for loot in self.loot_sprites:
                 if loot.rect.colliderect(self.player.hitbox):
@@ -151,6 +159,18 @@ class Level:
         pause_button_rect = pause_button_image.get_rect()
         pause_button_rect.topleft = (10, 60)
         self.display_surface.blit(pause_button_image, pause_button_rect)
+        
+        if pause_button_rect.collidepoint(pygame.mouse.get_pos()):
+            if pygame.mouse.get_pressed()[0]:
+                if not self.pause_button_check:
+                    self.toggle_pause()
+                    self.pause_button_check = True
+            else:
+                self.pause_button_check = False
+            
+
+        
+            
     def draw_eddie_number(self):
         eddie_image = pygame.image.load('../graphics/eddie.png').convert_alpha()
         eddie_image = pygame.transform.scale(eddie_image, (TILE_SIZE, TILE_SIZE))
@@ -171,6 +191,7 @@ class Level:
         
         if self.game_paused:
             self.pause_menu.display()
+            self.draw_pause_button()
             
             
             
@@ -184,6 +205,8 @@ class Level:
             self.regen_ammo()
             self.draw_pause_button()
             self.draw_eddie_number()
+            if not self.player.player_alive():
+                self.player.death_screen()
               
         
         

@@ -12,7 +12,7 @@ class LandingPage:
         
         self.load_game_button = pygame.Rect(100, 300, 200, 50)
         self.load_game_text = self.font.render('Load Game', True, (255, 255, 255))
-
+        self.clock = pygame.time.Clock()
     def draw(self):
         pygame.draw.rect(self.display_surface, (0, 255, 0), self.new_game_button)
         self.display_surface.blit(self.new_game_text, (self.new_game_button.x + 50, self.new_game_button.y + 10))
@@ -49,5 +49,6 @@ class LandingPage:
                         return
                 
             pygame.display.update()
+            self.clock.tick(FPS)
             
         

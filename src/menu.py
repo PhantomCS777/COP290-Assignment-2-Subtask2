@@ -393,6 +393,7 @@ class UpgradeMenu:
                         sys.exit()
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_u:
                         self.upgrade_check = not self.upgrade_check
+                        check_enter = False 
                         return
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
                         self.current_option += 1

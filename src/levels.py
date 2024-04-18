@@ -32,7 +32,7 @@ class Hospital(Level):
 
             if keys[pygame.K_h]:
                 self.player.stats['health'] = self.player.max_stats['health']
-                print(self.player.stats['health'])
+                # print(self.player.stats['health'])
     def create_map(self):
         pass 
 
@@ -68,7 +68,7 @@ class Level1(Level):
             
             if keys[pygame.K_h]:
                 self.player.stats['health'] = self.player.max_stats['health']
-                print(self.player.stats['health'])
+                # print(self.player.stats['health'])
         
     def update_level(self):
         if pygame.sprite.spritecollide(self.player,self.door_to_level2,False):

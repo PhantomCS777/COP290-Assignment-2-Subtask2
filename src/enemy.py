@@ -120,8 +120,8 @@ class OpenWEnemy(Entity):
         if self.vulnerable:
             self.direction = self.get_player_dist_dir(player)[1]    
             self.health -= player.player_weapon_attr('dmg')
-            print(self.health)
-            print(self.health)
+            # print(self.health)
+            # print(self.health)
             self.dmg_time = pygame.time.get_ticks()
             self.vulnerable = False
         
