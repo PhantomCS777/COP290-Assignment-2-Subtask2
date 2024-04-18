@@ -26,6 +26,7 @@ class Player(Entity):
             'up_idle' : [self.sheet_idle.parse_sprite(f'frame_up_{0}') for i in range(4)],
             
             }
+        self.animations = {k:[pygame.transform.scale(i,(1.5*TILE_SIZE,1.5*TILE_SIZE)) for i in v] for k,v in self.animations.items()}
         self.frames_down = [self.sheet.parse_sprite(f'frame_down_{i}') for i in range(4)]
         self.frame_left = [self.sheet.parse_sprite(f'frame_left_{i}') for i in range(4)]
         self.frame_right = [self.sheet.parse_sprite(f'frame_right_{i}') for i in range(4)]

@@ -5,6 +5,8 @@ from player import Player
 from enemy import OpenWEnemy
 from tile import Tile
 from menu import UpgradeMenu
+from pytmx.util_pygame import load_pygame
+
 class Hospital(Level):
     def __init__(self,level_name,savefile):
         self.reset = False
@@ -121,3 +123,39 @@ class Level2(Level):
         self.reset = False
     def update_level(self):
         return self.level_name
+
+
+class Home(Level):
+    def __init__(self,level_name,savefile):
+        self.reset = False
+        self.level_name = level_name
+        self.door_to_level2 = pygame.sprite.Group()
+        self.hospital = pygame.sprite.Group()
+        self.upgrade_shop = pygame.sprite.Group()
+        self.heal_check = False
+        
+        super().__init__(savefile)
+        self.upgrade_menu = UpgradeMenu(self.player)
+    
+    def create_map(self):
+        self.player = Player((1300,1000),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self,self.savefile)
+        gameMap = load_pygame('../map/Home_map/HomeMap.tmx')
+        # for layer in gameMap.layers:
+                # try:
+                    # pass
+                    # for x, y, gid, in layer:   
+                    #     if gid:
+                    #         tile = gameMap.get_tile_image_by_gid(gid)
+                    #         tile = pygame.transform.scale(tile,(TILE_SIZE,TILE_SIZE))
+                    #         Tile((x*TILE_SIZE,y*TILE_SIZE),[self.visible_sprite,self.obstacle_sprite],'object',tile)
+                # except:
+                    # pass
+        for layer in gameMap.objectgroups:
+            for object in layer: 
+                
+                Tile((2*object.x,2*object.y),[self.visible_sprite,self.obstacle_sprite],'objec',object.image)  
+            
+            
+            
+
+

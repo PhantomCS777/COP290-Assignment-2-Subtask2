@@ -16,7 +16,7 @@ class Control:
         
         # self.level1 = Level1('level-1',self.savefile) # repalce with Level(save_data) 
         # self.level2 = Level2('level-2',self.savefile)
-        
+        self.Home = Home('home',self.savefile)
         self.level1 = None
         self.level2 = None
         level_thread1 = Thread(target=self.initialize_level, args=('level-1',))
@@ -146,7 +146,8 @@ class Control:
                 
             if self.current_level_name == 'level-1':
                 self.current_level = self.level1
-                self.level1.run()
+                # self.level1.run()
+                self.Home.run()
                 self.current_level_name = self.level1.update_level()
                 self.current_level.new_update()
                 if self.current_level_name != 'level-1':

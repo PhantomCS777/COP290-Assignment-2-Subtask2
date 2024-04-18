@@ -9,6 +9,8 @@ from debugger import debug
 from enemydrop import Loot
 from menu import PauseMenu
 from util import *
+from pytmx.util_pygame import load_pygame
+ 
 import random 
 class Level:
     def __init__(self,savefile):
@@ -220,7 +222,7 @@ class YOrderCameraGroup(pygame.sprite.Group):
         self.half_w = self.display_surface.get_width() // 2
         self.half_h = self.display_surface.get_height() // 2
         self.offset = pygame.math.Vector2(50,50)
-        self.floor_surf = pygame.image.load('../graphics/ground_1.png').convert()
+        self.floor_surf = pygame.image.load('../map/Home_map/map.png').convert()
         self.floor_rect = self.floor_surf.get_rect(topleft = (0,0))
     
     def draw(self,player):

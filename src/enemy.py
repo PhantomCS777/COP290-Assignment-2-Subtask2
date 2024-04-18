@@ -3,6 +3,7 @@ from settings import *
 from entity import Entity
 from debugger import debug
 from enemydrop import Loot
+from util import *
 import math
 import random 
 
@@ -10,6 +11,7 @@ class OpenWEnemy(Entity):
     def __init__(self,enemy_name,position,groups,obstacle_sprites,loot_sprites,visible_sprite,dmg_to_player):
         super().__init__(groups)
         self.sprite_type = 'enemy' 
+        
         
         self.import_graphics(enemy_name)
         self.status = 'idle'
@@ -21,7 +23,14 @@ class OpenWEnemy(Entity):
         self.loot_sprites = loot_sprites
         self.visible_sprite = visible_sprite
         # enemy stats 
- 
+
+        self.sheet = Spritesheet(f'../graphics/noise_pollution.png','noise_pollution')
+        
+        self.frame_index = 0
+        self.animatino_speed = 0.1  
+        
+        self.animation = [self.sheet.parse_sprite(f'frame_{i}') for i in range(8)] 
+        
         self.enemy_name=  enemy_name
         enemy_data = ENEMY_BASE[self.enemy_name]
         self.health = enemy_data['health']
@@ -90,8 +99,8 @@ class OpenWEnemy(Entity):
             self.status = 'idle'
     
     def animate(self):
-        animation = self.animations[self.status]
-        self.frame_index += 0.1
+        animation = self.animation
+        self.frame_index += self.animatino_speed
         if self.frame_index >= len(animation):
             if self.status == 'atk':
                 self.can_attack = False
