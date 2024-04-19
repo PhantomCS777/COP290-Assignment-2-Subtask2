@@ -171,8 +171,8 @@ class Home(Level):
                 # print(self.player.stats['health'])
     def update_level(self):
         if pygame.sprite.spritecollide(self.player,self.door_to_level1,False):
-                
-                return 'room1'
+            self.control.ice.player.hitbox.x,self.control.ice.player.hitbox.y = (61*16,65*16)
+            return 'ice'
         
         if pygame.sprite.spritecollide(self.player,self.door_to_room1,False):
             self.control.room1.player.hitbox.x,self.control.room1.player.hitbox.y = (16*12*2,16*17*2)
@@ -393,3 +393,58 @@ class Dungeon(Level):
                             
         
         
+class Ice(Level):
+    def __init__(self,level_name,savefile,control):
+        self.control = control
+        self.reset = False
+        self.level_name = level_name
+        self.door_to_Home = pygame.sprite.Group()
+        
+        super().__init__(savefile)
+        self.visible_sprite = YOrderCameraGroup('../map/Ice/Ice.png')
+        self.create_map()
+    def update_level(self):
+        if pygame.sprite.spritecollide(self.player,self.door_to_Home,False):
+            self.control.Home.player.hitbox.x,self.control.Home.player.hitbox.y = (46*16,54*16)
+            return 'Home'
+        return self.level_name
+
+    def new_update(self):
+        pass 
+    
+    def create_map(self):
+        self.player = Player((48*32,33*32),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self,self.savefile)
+        s = "Ice map.tmx"
+        gameMap = load_pygame(f'../map/Ice/{s}')
+    
+        
+        for layer in gameMap.layers:
+            if layer.id == 4:
+                print(dir(layer))
+                data = layer.data 
+                for row_index,row in enumerate(data):
+                    for column_index,column in enumerate(row):
+                        x = column_index*16
+                        y = row_index*16
+                        if column != 0:
+                            Tile((x,y),[self.obstacle_sprite],'invisible')
+            elif layer.id == 6:
+                data = layer.data 
+                for row_index,row in enumerate(data):
+                    for column_index,column in enumerate(row):
+                        x = column_index*16
+                        y = row_index*16
+                        if column != 0:
+                            enem = random.choice(['air_pollution','water_pollution','noise_pollution'])
+                            OpenWEnemy(enem,(x,y),[self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.loot_sprites,self.visible_sprite,self.dmg_to_player)
+                            
+        
+        for layer in gameMap.objectgroups:
+            for object in layer: 
+                
+                if object.name == 'boat':
+                    Tile((object.x,object.y),[self.visible_sprite,self.obstacle_sprite,self.door_to_Home],'object',(lambda x:pygame.transform.scale(x,(object.width,object.height)))(object.image))
+                else:
+                    Tile((object.x,object.y),[self.visible_sprite,self.obstacle_sprite],'object',(lambda x:pygame.transform.scale(x,(object.width,object.height)))(object.image))
+                
+            

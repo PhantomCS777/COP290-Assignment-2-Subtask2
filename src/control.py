@@ -22,22 +22,24 @@ class Control:
         # self.level2 = Level2('level-2',self.savefile)
         self.Home = None
         self.dungeon = None
-        self.level1 = None
-        self.level2 = None
+        self.ice = None 
         self.room1 = None 
         self.room2 = None 
         level_thread1 = Thread(target=self.initialize_level, args=('Home',))
         level_thread2 = Thread(target=self.initialize_level, args=('dungeon',))
         home_thread3 = Thread(target=self.initialize_level, args=('room1',))
         dungeon_thread4 = Thread(target=self.initialize_level, args=('room2',))
+        ice_thread5 = Thread(target=self.initialize_level, args=('ice',))   
         level_thread1.start()
         level_thread2.start()
         home_thread3.start()
         dungeon_thread4.start()
+        ice_thread5.start()
         level_thread1.join()
         level_thread2.join()
         home_thread3.join()
         dungeon_thread4.join()
+        ice_thread5.join()
         
         # self.room1 = Room('room1',self.savefile,self)
         # self.room2 = Room2('room2',self.savefile,self)
@@ -65,6 +67,8 @@ class Control:
             self.room1 = Room(level_name, self.savefile,self)
         elif level_name == 'room2':
             self.room2 = Room2(level_name, self.savefile,self)
+        elif level_name == 'ice':
+            self.ice = Ice(level_name, self.savefile,self)
             
         
             
@@ -81,6 +85,8 @@ class Control:
             return self.room1
         if level == 'room2':
             return self.room2
+        if level == 'ice':
+            return self.ice
     def update_game_state(self,mode):
         self.game_state = mode 
          
@@ -253,5 +259,14 @@ class Control:
                     self.room2.reset = False
                     self.room2 = Room2('room2',self.savefile,self)
                 return 
+            elif self.current_level_name == 'ice':
+                self.current_level = self.ice
+                self.ice.run()
+                self.current_level_name = self.ice.update_level()
+                if self.ice.reset:
+                    self.ice.get_player().stats['health'] = 70
+                    self.ice.reset = False
+                    self.ice = Ice('ice',self.savefile,self)
+                return
             
         
