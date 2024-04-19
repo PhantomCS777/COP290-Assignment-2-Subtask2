@@ -21,6 +21,7 @@ class Level:
         self.map_icon_image = pygame.image.load('../graphics/asset/map_icon.png').convert_alpha()
         self.map_icon_image = pygame.transform.scale(self.map_icon_image, (TILE_SIZE, TILE_SIZE))
         self.map_icon_rect = self.map_icon_image.get_rect()
+        print('attatawush')
         self.map_icon_rect.topright = (self.display_surface.get_width() - 10, 10)
         
         # sprite groups 
@@ -225,13 +226,13 @@ class Level:
     
 
 class YOrderCameraGroup(pygame.sprite.Group):
-    def __init__(self):
+    def __init__(self,path='../map/Home_map/map.png'):
         super().__init__()
         self.display_surface = pygame.display.get_surface()
         self.half_w = self.display_surface.get_width() // 2
         self.half_h = self.display_surface.get_height() // 2
         self.offset = pygame.math.Vector2(50,50)
-        self.floor_surf = pygame.image.load('../map/Home_map/map.png').convert()
+        self.floor_surf = pygame.image.load(path).convert()
         self.floor_rect = self.floor_surf.get_rect(topleft = (0,0))
     
     def draw(self,player):

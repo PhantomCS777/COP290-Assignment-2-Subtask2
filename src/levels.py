@@ -1,6 +1,7 @@
 import pygame 
 from settings import * 
 from level import Level
+from level import YOrderCameraGroup
 from player import Player
 from enemy import OpenWEnemy
 from tile import Tile
@@ -169,7 +170,7 @@ class Home(Level):
     def update_level(self):
         if pygame.sprite.spritecollide(self.player,self.door_to_level1,False):
                 
-                return 'level-1'
+                return 'dungeon'
         return self.level_name
 
     
@@ -229,3 +230,38 @@ class Room(Level):
         
     def update_level(self):
         return self.level_name
+    
+
+class Dungeon(Level):
+    def __init__(self,level_name,savefile,control):
+        self.control = control
+        self.reset = False
+        self.level_name = level_name
+        self.door_to_level1 = pygame.sprite.Group()
+        super().__init__(savefile)
+        self.visible_sprite = YOrderCameraGroup('../map/Dungeon/map.png')
+        self.create_map()
+    def update_level(self):
+        if pygame.sprite.spritecollide(self.player,self.door_to_level1,False):
+                return 'level-1'
+        return self.level_name
+
+    def new_update(self):
+        pass 
+    
+    def create_map(self):
+        self.player = Player((500,4700),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self,self.savefile)
+        gameMap = load_pygame('../map/Dungeon/MapDungeon.tmx')
+        
+        for layer in gameMap.layers:
+            if layer.id == 7:
+                print(dir(layer))
+                data = layer.data 
+                for row_index,row in enumerate(data):
+                    for column_index,column in enumerate(row):
+                        x = column_index*16
+                        y = row_index*16
+                        if column != 0:
+                            Tile((2*x,2*y),[self.obstacle_sprite],'invisible')
+        
+        
