@@ -13,12 +13,13 @@ class Game:
         self.clock = pygame.time.Clock() 
         # self.level = Level()
         self.control = Control()
-        self.landing_page = LandingPage(self.control)
+        self.landing_page = LandingPage()
         print("Game Initialized")
     def run(self):
         while True: 
-            if self.control.game_state == 'landing_page':
+            if self.landing_page.game_state == 'landing_page':
                 self.landing_page.run()
+                self.screen = pygame.display.set_mode(self.landing_page.aspect_rations[self.landing_page.aspect_ratio])
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.control.update_save_file(self.control.current_level)
@@ -30,10 +31,17 @@ class Game:
                         # self.level.toggle_pause()
                         pass
             self.screen.fill('Black')   
-            if self.control.game_state == 'landing_page':
-                self.landing_page.run()
-            else:
-                self.control.run() 
+            if self.landing_page.game_state != 'landing_page' and self.landing_page.game_state != 'over':
+                self.screen = pygame.display.set_mode(self.landing_page.aspect_rations[self.landing_page.aspect_ratio])
+            if self.landing_page.game_state == 'new':
+                self.control = Control()
+                self.control.game_state = 'new'
+                self.landing_page.game_state = 'over'
+            elif self.landing_page.game_state == 'load':
+                self.control = Control()
+                self.control.game_state = 'load'
+                self.landing_page.game_state = 'over'
+            self.control.run()
             pygame.display.update()
             self.clock.tick(FPS)     
 

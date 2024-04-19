@@ -6,13 +6,13 @@ from debugger import debug
 
 
 class Camera(pygame.sprite.Group):
-    def __init__(self):
+    def __init__(self,path):
         super().__init__()
         self.display_surface = pygame.display.get_surface()
         self.half_w = self.display_surface.get_width() // 2
         self.half_h = self.display_surface.get_height() // 2
         self.offset = pygame.math.Vector2(50,50)
-        self.floor_surf = pygame.image.load('../map/Home_map/map.png').convert()
+        self.floor_surf = pygame.image.load(path).convert()
         self.floor_rect = self.floor_surf.get_rect(topleft = (0,0))
     
     def draw(self,player):
@@ -60,12 +60,13 @@ class Pointer(pygame.sprite.Sprite):
         
 
 class WorldMap:
-    def __init__(self,savefile):
+    def __init__(self,savefile,control):
         self.display_surface = pygame.display.get_surface()
         self.savefile = savefile
-        self.camera = Camera()
+        self.camera = Camera('../graphics/asset/Home_icon.png')
         self.pointer = Pointer([self.camera])
         self.current_level = None 
+        self.control = control 
         self.input_trigger = False
         self.mouse_trigger = False 
         self.map_icon_image = pygame.image.load('../graphics/asset/map_icon.png').convert_alpha()
@@ -85,8 +86,10 @@ class WorldMap:
         
         
     def assign_level(self,level):
-        self.current_level = level
-    
+        self.current_level = level 
+        self.camera = Camera(f"../graphics/asset/{level}_icon.png")
+        self.pointer = Pointer([self.camera])
+        
     def exit_map(self):
         # keys = pygame.key.get_pressed()
         # if keys[pygame.K_m]:

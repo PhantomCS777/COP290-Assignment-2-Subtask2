@@ -138,6 +138,8 @@ class Home(Level):
         self.reset = False
         self.level_name = level_name
         self.door_to_level1 = pygame.sprite.Group()
+        self.door_to_room1 = pygame.sprite.Group()
+        self.door_to_room2 = pygame.sprite.Group()
         self.hospital = pygame.sprite.Group()
         self.upgrade_shop = pygame.sprite.Group()
         self.heal_check = False
@@ -154,7 +156,7 @@ class Home(Level):
             size = (display_surface.get_width() // 2, display_surface.get_height() // 2)
             overlay_surface = pygame.Surface(size, pygame.SRCALPHA)
             overlay_surface.fill((255, 0, 0, 128))  # Translucent red color
-            display_surface.blit(overlay_surface, (WIDTH//4, HEIGTH//4))
+            display_surface.blit(overlay_surface, (display_surface.get_width()//4, display_surface.get_height()//4))
 
             font = pygame.font.Font(None, 36)
             text_surface = font.render("Do you want to heal ?:", True, (255, 255, 255))
@@ -170,7 +172,15 @@ class Home(Level):
     def update_level(self):
         if pygame.sprite.spritecollide(self.player,self.door_to_level1,False):
                 
-                return 'dungeon'
+                return 'room1'
+        
+        if pygame.sprite.spritecollide(self.player,self.door_to_room1,False):
+            self.control.room1.player.hitbox.x,self.control.room1.player.hitbox.y = (16*12*2,16*17*2)
+            return 'room1'
+        
+        if pygame.sprite.spritecollide(self.player,self.door_to_room2,False):
+            self.control.room2.player.hitbox.x,self.control.room2.player.hitbox.y = (16*3*2,16*16*2)
+            return 'room2'
         return self.level_name
 
     
@@ -182,6 +192,15 @@ class Home(Level):
         self.player = Player((1300,1000),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self,self.savefile)
         gameMap = load_pygame('../map/Home_map/HomeMap.tmx')
         # print(gameMap.layers)
+        door_to_room1 = [(70,29)] 
+        door_to_room1 = list(map(lambda x: (x[0]*16,x[1]*16),door_to_room1))
+        door_to_room2 = [(92,72)]
+        door_to_room2 = list(map(lambda x: (x[0]*16,x[1]*16),door_to_room2))
+        for cordi in door_to_room1:
+            Tile(cordi,[self.door_to_room1],'object')
+        for cordi in door_to_room2:
+            Tile(cordi,[self.door_to_room2],'object')
+            
         for layer in gameMap.layers:
             if layer.id == 2:
                 print(dir(layer))
@@ -211,8 +230,14 @@ class Home(Level):
                     self.boat = Tile((object.x,object.y),[self.visible_sprite,self.obstacle_sprite,self.door_to_level1],'object',(lambda x:pygame.transform.scale(x,(object.width,object.height)))(object.image))
                 else:
                     Tile((object.x,object.y),[self.visible_sprite,self.obstacle_sprite],'object',(lambda x:pygame.transform.scale(x,(object.width,object.height)))(object.image))
-
         
+        enemy_cordi = [(48,61),(55,64),(95,50),(95,55),(85,60)]
+        enemy_cordi = list(map(lambda x: (x[0]*16,x[1]*16),enemy_cordi))
+        for cordi in enemy_cordi:
+            enem = random.choice(['water_pollution'])
+            OpenWEnemy(enem,cordi,[self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.loot_sprites,self.visible_sprite,self.dmg_to_player)
+        
+       
            
     def new_update(self):
         self.heal()
@@ -223,38 +248,127 @@ class Home(Level):
 class Room(Level):
     def __init__(self,level_name,savefile,control):
        
-        self.level_name = level_name
-        self.reset = False
         self.control = control
+        self.reset = False
+        self.level_name = level_name
+        self.door_to_Home = pygame.sprite.Group()
+        self.door_to_dungeon = pygame.sprite.Group()    
         super().__init__(savefile)
+        self.visible_sprite = YOrderCameraGroup('../map/Room/Room1.png')
+        self.create_map()
         
     def update_level(self):
+        if pygame.sprite.spritecollide(self.player,self.door_to_Home,False):
+            self.control.Home.player.hitbox.x,self.control.Home.player.hitbox.y = (71*16,33*16)
+            return 'Home'
+        if pygame.sprite.spritecollide(self.player,self.door_to_dungeon,False):
+            self.control.dungeon.player.hitbox.x,self.control.dungeon.player.hitbox.y = (47*32,29*32)
+            return 'dungeon'
+            
         return self.level_name
     
+    def create_map(self):
+        door_to_home = [(11,19),(12,19),(13,19)]
+        door_to_home = list(map(lambda x: (x[0]*16,x[1]*16),door_to_home))
+        door_to_dungeon = [(22,5)]
+        door_to_dungeon = list(map(lambda x: (x[0]*16,x[1]*16),door_to_dungeon))
+        playercord = (2*12,2*17)
+        self.player = Player((playercord[0]*16,playercord[1]*16),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self,self.savefile)
+        gameMap = load_pygame('../map/Room/Room1.tmx')
+        for layer in gameMap.layers:
+            if layer.id == 5:
+                
+                data = layer.data 
+                for row_index,row in enumerate(data):
+                    for column_index,column in enumerate(row):
+                        x = column_index*16
+                        y = row_index*16
+                        if column != 0:
+                            Tile((2*x,2*y),[self.obstacle_sprite],'invisible')
+                            if (x,y) in door_to_home:
+                                Tile((2*x,2*y),[self.door_to_Home],'invisible')
+                            if (x,y) in door_to_dungeon:
+                                Tile((2*x,2*y),[self.door_to_dungeon],'invisible')
+    
+class Room2(Level):
+    def __init__(self,level_name,savefile,control):
+       
+        self.control = control
+        self.reset = False
+        self.level_name = level_name
+        self.door_to_Home = pygame.sprite.Group()
+        self.door_to_dungeon = pygame.sprite.Group()    
+        super().__init__(savefile)
+        self.visible_sprite = YOrderCameraGroup('../map/Room2/room2.png')
+        self.create_map()
+        
+    def update_level(self):
+        if pygame.sprite.spritecollide(self.player,self.door_to_Home,False):
+            self.control.Home.player.hitbox.x,self.control.Home.player.hitbox.y = (91*16,79*16)
+            return 'Home'
+        if pygame.sprite.spritecollide(self.player,self.door_to_dungeon,False):
+            self.control.dungeon.player.hitbox.x,self.control.dungeon.player.hitbox.y = (4*32,44*32)
+            return 'dungeon'
+            
+        return self.level_name
+    
+    def create_map(self):
+        door_to_home = [(3,19)]
+        door_to_home = list(map(lambda x: (x[0]*16,x[1]*16),door_to_home))
+        door_to_dungeon = [(1,5),(2,6),(0,6)]
+        door_to_dungeon = list(map(lambda x: (x[0]*16,x[1]*16),door_to_dungeon))
+        playercord = (2*3,2*7)
+        self.player = Player((playercord[0]*16,playercord[1]*16),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self,self.savefile)
+        gameMap = load_pygame('../map/Room2/room2.tmx')
+        for layer in gameMap.layers:
+            if layer.id == 4:
+                
+                data = layer.data 
+                for row_index,row in enumerate(data):
+                    for column_index,column in enumerate(row):
+                        x = column_index*16
+                        y = row_index*16
+                        if column != 0:
+                            Tile((2*x,2*y),[self.obstacle_sprite],'invisible')
+                            if (x,y) in door_to_home:
+                                Tile((2*x,2*y),[self.door_to_Home],'invisible')
+                            if (x,y) in door_to_dungeon:
+                                Tile((2*x,2*y),[self.door_to_dungeon],'invisible')   
 
 class Dungeon(Level):
     def __init__(self,level_name,savefile,control):
         self.control = control
         self.reset = False
         self.level_name = level_name
-        self.door_to_level1 = pygame.sprite.Group()
+        self.door_to_room1 = pygame.sprite.Group()
+        self.door_to_room2 = pygame.sprite.Group()
         super().__init__(savefile)
         self.visible_sprite = YOrderCameraGroup('../map/Dungeon/map.png')
         self.create_map()
     def update_level(self):
-        if pygame.sprite.spritecollide(self.player,self.door_to_level1,False):
-                return 'level-1'
+        if pygame.sprite.spritecollide(self.player,self.door_to_room1,False):
+            self.control.room1.player.hitbox.x,self.control.room1.player.hitbox.y = (22*32,8*32)
+            return 'room1'
+        if pygame.sprite.spritecollide(self.player,self.door_to_room2,False):
+            self.control.room2.player.hitbox.x,self.control.room2.player.hitbox.y = (3*16*2,7*16*2)
+            return 'room2'
         return self.level_name
 
     def new_update(self):
         pass 
     
     def create_map(self):
-        self.player = Player((500,4700),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self,self.savefile)
+        self.player = Player((48*32,33*32),[self.visible_sprite],self.obstacle_sprite,self.create_attack,self.destroy_attack,self,self.savefile)
         gameMap = load_pygame('../map/Dungeon/MapDungeon.tmx')
+        door_to_room = [(47,33),(48,33),(49,33),(50,33)]
+        door_to_room = list(map(lambda x: (x[0]*16,x[1]*16),door_to_room))
+        door_to_room2 = [(4,42),(5,42)]
+        door_to_room2 = list(map(lambda x: (2*x[0]*16,2*x[1]*16),door_to_room2))
+        for cordi in door_to_room2:
+            Tile(cordi,[self.door_to_room2],'object')
         
         for layer in gameMap.layers:
-            if layer.id == 7:
+            if layer.id == 3:
                 print(dir(layer))
                 data = layer.data 
                 for row_index,row in enumerate(data):
@@ -263,5 +377,19 @@ class Dungeon(Level):
                         y = row_index*16
                         if column != 0:
                             Tile((2*x,2*y),[self.obstacle_sprite],'invisible')
+                            if (x,y) in door_to_room:
+                                Tile((2*x,2*y),[self.obstacle_sprite,self.door_to_room1],'invisible')
+                            if (x,y) in door_to_room2:
+                                Tile((2*x,2*y),[self.obstacle_sprite,self.door_to_room2],'invisible')
+            elif layer.id == 4:
+                data = layer.data 
+                for row_index,row in enumerate(data):
+                    for column_index,column in enumerate(row):
+                        x = column_index*16
+                        y = row_index*16
+                        if column != 0:
+                            enem = random.choice(['air_pollution','water_pollution'])
+                            OpenWEnemy(enem,(2*x,2*y),[self.visible_sprite,self.attackable_sprites],self.obstacle_sprite,self.loot_sprites,self.visible_sprite,self.dmg_to_player)
+                            
         
         

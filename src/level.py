@@ -132,12 +132,12 @@ class Level:
                             target.take_dmg(self.player)
                         else:
                             pass
-                col_obstacle = pygame.sprite.spritecollide(attack,self.obstacle_sprite,False)
-                if col_obstacle:
-                    # self.player.open_world_status = self.player.open_world_status.split('_')[0]+'_idle' 
-                    # self.player.attacking = False 
-                    # print(self.player.open_world_status)
-                    attack.kill()
+                # col_obstacle = pygame.sprite.spritecollide(attack,self.obstacle_sprite,False)
+                # if col_obstacle:
+                #     # self.player.open_world_status = self.player.open_world_status.split('_')[0]+'_idle' 
+                #     # self.player.attacking = False 
+                #     # print(self.player.open_world_status)
+                #     attack.kill()
         if self.loot_sprites:
             for loot in self.loot_sprites:
                 if loot.rect.colliderect(self.player.hitbox):

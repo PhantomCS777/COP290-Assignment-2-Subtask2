@@ -3,8 +3,6 @@ import os,json
 from settings import * 
 from level import Level 
 from landing_page import LandingPage
-# from bossfight import BossFight
-from bigfight import BigFight
 from levels import *
 import subprocess
 from threading import Thread
@@ -13,7 +11,7 @@ class Control:
     def __init__(self):
         
         self.savefile = self.load_save_file()
-        self.landing_page = LandingPage(self)
+        
         
         
         
@@ -26,10 +24,12 @@ class Control:
         self.dungeon = None
         self.level1 = None
         self.level2 = None
+        self.room1 = None 
+        self.room2 = None 
         level_thread1 = Thread(target=self.initialize_level, args=('Home',))
         level_thread2 = Thread(target=self.initialize_level, args=('dungeon',))
-        home_thread3 = Thread(target=self.initialize_level, args=('level-1',))
-        dungeon_thread4 = Thread(target=self.initialize_level, args=('level-2',))
+        home_thread3 = Thread(target=self.initialize_level, args=('room1',))
+        dungeon_thread4 = Thread(target=self.initialize_level, args=('room2',))
         level_thread1.start()
         level_thread2.start()
         home_thread3.start()
@@ -39,35 +39,34 @@ class Control:
         home_thread3.join()
         dungeon_thread4.join()
         
-        
-        
+        # self.room1 = Room('room1',self.savefile,self)
+        # self.room2 = Room2('room2',self.savefile,self)
         self.game_state = 'landing_page'
         self.transition = False
         self.transition_counter = 0
         self.current_level_name = self.savefile['level_data']['current_level']
         self.current_level = self.get_current_level(self.current_level_name)
-        self.worldmap = WorldMap(self.savefile)
-        # self.current_level_name = 'worldmap'
-        # self.bossf = BossFight()
-        # self.bigf = BigFight()
+        self.worldmap = WorldMap(self.savefile,self)
+      
         
     def all_levels_processed(self):
-            if self.level1 is None or self.level2 is None or self.Home is None or self.dungeon is None:
-                return False
+            
             return True
             
     def initialize_level(self, level_name):
-        if level_name == 'level-1':
-            self.level1 = Level1(level_name, self.savefile,self)
-        elif level_name == 'level-2':
-            self.level2 = Level2(level_name, self.savefile,self)
+        if level_name == 'Home':
+            self.Home  = Home(level_name, self.savefile,self)
+        elif level_name == 'dungeon':
+            self.dungeon = Dungeon(level_name, self.savefile,self)
         elif level_name == 'Home':
             self.Home = Home(level_name, self.savefile,self)
-        elif level_name == 'dungeon':
-            print('dungeon')
-            self.dungeon = Dungeon(level_name, self.savefile,self)
-            print(self.dungeon.level_name)
-            print('dungeon_done')
+        elif level_name == 'room1':
+    
+            self.room1 = Room(level_name, self.savefile,self)
+        elif level_name == 'room2':
+            self.room2 = Room2(level_name, self.savefile,self)
+            
+        
             
     def get_current_level(self,level):
         if level == 'level-1':
@@ -78,6 +77,10 @@ class Control:
             return self.Home
         if level == 'dungeon':
             return self.dungeon
+        if level == 'room1':
+            return self.room1
+        if level == 'room2':
+            return self.room2
     def update_game_state(self,mode):
         self.game_state = mode 
          
@@ -221,7 +224,7 @@ class Control:
                     self.Home.get_player().stats['health'] = 70
                     self.Home.reset = False
                     self.transition =  True
-                    self.Home = Home('Home',self.savefile)   
+                    self.Home = Home('Home',self.savefile,self)   
                 return 
             elif self.current_level_name == 'dungeon':
                 self.current_level = self.dungeon
@@ -230,36 +233,25 @@ class Control:
                 if self.dungeon.reset:
                     self.dungeon.get_player().stats['health'] = 70
                     self.dungeon.reset = False
-                    self.dungeon = Dungeon('dungeon',self.savefile)
+                    self.dungeon = Dungeon('dungeon',self.savefile,self)
                 return
-               
-            if self.current_level_name == 'level-1':
-                self.current_level = self.level1
-                self.level1.run()
-                
-                # self.Home.run()
-                self.current_level.new_update()
-                self.current_level_name = self.level1.update_level()
-                if self.current_level_name != 'level-1':
-                    self.transition = True
-                    
-                if self.level1.reset:
-                    self.level1.get_player().stats['health'] = 70
-                    self.level1.reset = False
-                    self.transition =  True
-                    self.level1 = Level1('level-1',self.savefile)
-                    
-            # self.level1.run()
-            elif self.current_level_name == 'level-2':
-                self.current_level  = self.level2
-                self.level2.run()
-                self.current_level_name = self.level2.update_level()
-                
-                if self.level2.reset:
-                    self.level2.get_player().stats['health'] = 70
-                    self.level2.reset = False
-                    self.level2 = Level2('level-2',self.savefile)
-            # self.bigf.run()
-            # self.bossf.run()
+            elif self.current_level_name == 'room1':
+                self.current_level = self.room1
+                self.room1.run()
+                self.current_level_name = self.room1.update_level()
+                if self.room1.reset:
+                    self.room1.get_player().stats['health'] = 70
+                    self.room1.reset = False
+                    self.room1 = Room('room1',self.savefile,self)
+                return 
+            elif self.current_level_name == 'room2':
+                self.current_level = self.room2
+                self.room2.run()
+                self.current_level_name = self.room2.update_level()
+                if self.room2.reset:
+                    self.room2.get_player().stats['health'] = 70
+                    self.room2.reset = False
+                    self.room2 = Room2('room2',self.savefile,self)
+                return 
             
         

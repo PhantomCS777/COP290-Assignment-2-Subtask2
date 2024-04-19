@@ -346,7 +346,7 @@ class UpgradeMenu:
         size = (display_surface.get_width() // 2, display_surface.get_height() // 2)
         overlay_surface = pygame.Surface(size, pygame.SRCALPHA)
         overlay_surface.fill((255, 0, 0, 128))  # Translucent red color
-        display_surface.blit(overlay_surface, (WIDTH//4, HEIGTH//4))
+        display_surface.blit(overlay_surface, (display_surface.get_width()//4, display_surface.get_height()//4))
 
         font = pygame.font.Font(None, 36)
         text_surface = font.render("Upgrades applied", True, (255, 255, 255))
@@ -362,7 +362,7 @@ class UpgradeMenu:
         size = (display_surface.get_width() // 2, display_surface.get_height() // 2)
         overlay_surface = pygame.Surface(size, pygame.SRCALPHA)
         overlay_surface.fill((255, 0, 0, 128))  # Translucent red color
-        display_surface.blit(overlay_surface, (WIDTH//4, HEIGTH//4))
+        display_surface.blit(overlay_surface, (display_surface.get_width()//4, display_surface.get_height()//4))
 
         font = pygame.font.Font(None, 36)
         text_surface = font.render("Press U to open upgrade menu", True, (255, 255, 255))
