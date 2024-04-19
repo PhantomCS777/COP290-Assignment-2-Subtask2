@@ -212,15 +212,20 @@ class Home(Level):
                     Tile((object.x,object.y),[self.visible_sprite,self.obstacle_sprite],'object',(lambda x:pygame.transform.scale(x,(object.width,object.height)))(object.image))
 
         
-                
-        
-        
-
-                
-            
-            
-            
+           
     def new_update(self):
         self.heal()
         self.up_menu()
 
+
+
+class Room(Level):
+    def __init__(self,level_name,savefile,control):
+       
+        self.level_name = level_name
+        self.reset = False
+        self.control = control
+        super().__init__(savefile)
+        
+    def update_level(self):
+        return self.level_name

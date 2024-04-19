@@ -1,0 +1,49 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "MapDungeon.tmx",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "MapDungeon.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 145.33333333333326,
+                "y": 2480.6666666666665
+            }
+        },
+        "Props.tsx": {
+            "scaleInDock": 4,
+            "scaleInEditor": 1
+        },
+        "Tiles.tsx": {
+            "scaleInDock": 2,
+            "scaleInEditor": 1
+        }
+    },
+    "last.imagePath": "//wsl.localhost/Ubuntu/home/anushka_01/Work/A2_S2/Map-2",
+    "map.height": 175,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 75,
+    "openFiles": [
+        "MapDungeon.tmx",
+        "Props.tsx",
+        "Tiles.tsx"
+    ],
+    "project": "MapDungeon.tiled-project",
+    "recentFiles": [
+        "Tiles.tsx",
+        "Props.tsx",
+        "MapDungeon.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}

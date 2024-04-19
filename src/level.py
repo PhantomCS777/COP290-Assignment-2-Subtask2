@@ -17,6 +17,12 @@ class Level:
         # display surface 
         
         self.display_surface = pygame.display.get_surface()
+        
+        self.map_icon_image = pygame.image.load('../graphics/asset/map_icon.png').convert_alpha()
+        self.map_icon_image = pygame.transform.scale(self.map_icon_image, (TILE_SIZE, TILE_SIZE))
+        self.map_icon_rect = self.map_icon_image.get_rect()
+        self.map_icon_rect.topright = (self.display_surface.get_width() - 10, 10)
+        
         # sprite groups 
         self.visible_sprite = YOrderCameraGroup()
         self.obstacle_sprite = pygame.sprite.Group()
@@ -170,7 +176,9 @@ class Level:
                     self.pause_button_check = True
             else:
                 self.pause_button_check = False
-            
+       
+
+        self.display_surface.blit(self.map_icon_image, self.map_icon_rect)
 
         
             

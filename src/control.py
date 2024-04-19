@@ -8,6 +8,7 @@ from bigfight import BigFight
 from levels import *
 import subprocess
 from threading import Thread
+from worldmap import *
 class Control:
     def __init__(self):
         
@@ -17,6 +18,8 @@ class Control:
         
         
         self.input_trigger = True 
+        self.input_trigger_m = True
+        self.input_mouse_m = True
         # self.level1 = Level1('level-1',self.savefile) # repalce with Level(save_data) 
         # self.level2 = Level2('level-2',self.savefile)
         self.Home = None
@@ -37,6 +40,8 @@ class Control:
         self.transition_counter = 0
         self.current_level_name = self.savefile['level_data']['current_level']
         self.current_level = self.get_current_level(self.current_level_name)
+        self.worldmap = WorldMap(self.savefile)
+        # self.current_level_name = 'worldmap'
         # self.bossf = BossFight()
         # self.bigf = BigFight()
         
@@ -80,6 +85,31 @@ class Control:
                 self.input_trigger = False
         else:
             self.input_trigger = True
+        
+        
+
+    def check_world_map(self):
+        print('maps')
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_m]:
+            if self.input_trigger_m:
+                self.current_level_name = 'worldmap'
+                self.worldmap.assign_level(self.current_level.level_name)
+                self.worldmap.toggle  = not self.worldmap.toggle
+                self.input_trigger_m = False
+        else:
+            self.input_trigger_m = True
+        
+             
+        if self.current_level.map_icon_rect.collidepoint(pygame.mouse.get_pos()):
+            if pygame.mouse.get_pressed()[0]:
+                if self.input_mouse_m:
+                    self.current_level_name = 'worldmap'
+                    self.worldmap.assign_level(self.current_level.level_name)
+                    self.worldmap.toggle = not self.worldmap.toggle
+                    self.input_mouse_m = False
+            else:
+                self.input_mouse_m = True
     
     def update_save_file(self,level):
         save_file_path = "../savefile/save.json"   
@@ -148,10 +178,14 @@ class Control:
             
         elif self.game_state == 'load':
             self.input()
+            self.check_world_map()
             if self.transition:
                 self.transition_screen()
                 return
-            
+            if self.current_level_name == 'worldmap':
+                self.worldmap.run()
+                self.current_level_name = self.worldmap.exit_map()
+                return
             if self.current_level_name == 'Home':
                 self.current_level = self.Home
                 
@@ -197,4 +231,5 @@ class Control:
                     self.level2 = Level2('level-2',self.savefile)
             # self.bigf.run()
             # self.bossf.run()
+            
         
