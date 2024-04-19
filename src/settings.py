@@ -1,4 +1,6 @@
 # game setup
+WIDTH_DEFAULT = 1280
+HEIGTH_DEFAULT = 720
 GAME_NAME = 'Game'
 WIDTH    = 1280	
 HEIGTH   = 720 
@@ -6,6 +8,8 @@ FPS      = 60
 TILE_SIZE = 64
 PLAYER_SPEED = 8
 
+
+ASPECT_RATIOS = {'default':(WIDTH_DEFAULT,HEIGTH_DEFAULT),'16:9':(1280,720),'4:3':(1024,768),'16:10':(1280,800),'3:2':(960,640),'5:3':(800,480),'5:4':(1280,1024),'3:4':(768,1024),'9:16':(720,1280),'10:16':(800,1280),'2:3':(640,960),'3:5':(480,800),'4:5':(1024,1280)}
 
 WEAPONS = {
     'glove':{'cooldown':200,'dmg':20,'graphic':'../graphics/gloves.png','weapon_type':'melee','atk_cost':1,'weapon_level':1},
