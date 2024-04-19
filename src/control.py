@@ -14,38 +14,46 @@ class Control:
         self.savefile = self.load_save_file()
         self.landing_page = LandingPage(self)
         
+        
+        
+        self.input_trigger = True 
         # self.level1 = Level1('level-1',self.savefile) # repalce with Level(save_data) 
         # self.level2 = Level2('level-2',self.savefile)
-        self.Home = Home('home',self.savefile)
+        self.Home = None
         self.level1 = None
         self.level2 = None
         level_thread1 = Thread(target=self.initialize_level, args=('level-1',))
         level_thread2 = Thread(target=self.initialize_level, args=('level-2',))
+        home_thread3 = Thread(target=self.initialize_level, args=('Home',))
         level_thread1.start()
         level_thread2.start()
+        home_thread3.start()
         level_thread1.join()
         level_thread2.join()
+        home_thread3.join()
         
         self.game_state = 'landing_page'
         self.transition = False
         self.transition_counter = 0
         self.current_level_name = self.savefile['level_data']['current_level']
         self.current_level = self.get_current_level(self.current_level_name)
-        
-        self.input_trigger = True 
         # self.bossf = BossFight()
         # self.bigf = BigFight()
         
     def initialize_level(self, level_name):
         if level_name == 'level-1':
-            self.level1 = Level1(level_name, self.savefile)
+            self.level1 = Level1(level_name, self.savefile,self)
         elif level_name == 'level-2':
-            self.level2 = Level2(level_name, self.savefile)
+            self.level2 = Level2(level_name, self.savefile,self)
+        elif level_name == 'Home':
+            self.Home = Home(level_name, self.savefile,self)
     def get_current_level(self,level):
         if level == 'level-1':
             return self.level1
         if level == 'level-2':
             return self.level2
+        if level == 'Home':
+            return self.Home
     def update_game_state(self,mode):
         self.game_state = mode 
          
@@ -143,13 +151,31 @@ class Control:
             if self.transition:
                 self.transition_screen()
                 return
+            
+            if self.current_level_name == 'Home':
+                self.current_level = self.Home
                 
+                print(self.Home.player.rect.x,self.Home.player.rect.y)
+                self.Home.run()
+                self.current_level.new_update()
+                self.current_level_name = self.Home.update_level()
+                if self.current_level_name != 'Home':
+                    self.transition = True
+                    
+                if self.Home.reset:
+                    self.Home.get_player().stats['health'] = 70
+                    self.Home.reset = False
+                    self.transition =  True
+                    self.Home = Home('Home',self.savefile)   
+                return 
+                    
             if self.current_level_name == 'level-1':
                 self.current_level = self.level1
                 self.level1.run()
+                
                 # self.Home.run()
-                self.current_level_name = self.level1.update_level()
                 self.current_level.new_update()
+                self.current_level_name = self.level1.update_level()
                 if self.current_level_name != 'level-1':
                     self.transition = True
                     
